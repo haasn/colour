@@ -60,7 +60,8 @@ colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
 data Alpha = Alpha
-data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) -- premultiplied alpha
+-- premultiplied alpha
+data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
 
 transparent :: (Num a) => AlphaColour a
 transparent = RGBA (RGB Chan.empty Chan.empty Chan.empty) Chan.empty
