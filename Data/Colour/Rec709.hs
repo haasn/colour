@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
-module Data.Colour.Rec601
+module Data.Colour.Rec709
  (luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
@@ -48,4 +48,4 @@ toY'CbCr :: (Floating a, RealFrac a)  => Colour a -> (Word8, Word8, Word8)
 toY'CbCr = L.toY'CbCr lumaCoef
 
 {- Not for export -}
-lumaCoef = (0.299, 0.587, 0.114)
+lumaCoef = (0.2126, 0.7152, 0.0722)
