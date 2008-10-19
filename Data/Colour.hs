@@ -59,6 +59,13 @@ colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
+instance (Real a) => Show (Colour a) where
+  showsPrec _ c = ("(rgb709 "++) . (shows r) . (" "++)
+                                 . (shows b) . (" "++)
+                                 . (shows b) . (")"++)
+   where
+    (r,g,b) = toRGB709 c
+
 data Alpha = Alpha
 -- premultiplied alpha
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
