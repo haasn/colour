@@ -93,6 +93,8 @@ sRGB24shows c =
   (r', g', b') = toSRGB24 c
   showHex2 x | x <= 0xf = ("0"++) . showHex x
              | otherwise = showHex x
+
+sRGB24show :: (RealFrac b, Floating b) => Colour b -> String
 sRGB24show x = sRGB24shows x ""
 
 sRGB24reads :: (RealFrac b, Floating b) => ReadS (Colour b)
@@ -109,6 +111,7 @@ sRGB24reads x =
    where
     (a0,a1) = splitAt 2 a
 
+sRGB24read :: (RealFrac b, Floating b) => String -> (Colour b)
 sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
   error "Data.Colour.SRGB.readSRGB24: no parse"
              | otherwise = fst (head rx)

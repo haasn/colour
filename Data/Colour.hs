@@ -84,6 +84,7 @@ c `withOpacity` o = RGBA (scale o c) (Chan o)
 class AffineSpace f where
  affineCombo :: (Num a) => [(a,f a)] -> f a -> f a
 
+blend :: (Num a, AffineSpace f) => a -> f a -> f a -> f a
 blend weight c1 c2 = affineCombo [(weight,c2)] c1
 
 instance AffineSpace Colour where
@@ -119,6 +120,7 @@ instance Composite AlphaColour where
  c0@(RGBA _ a0@(Chan a0')) `over` (RGBA c1 a1) =
    RGBA (c0 `over` c1) (Chan.over a0 a0' a1)
 
+quantize :: (RealFrac a1, Integral a, Bounded a) => a1 -> a
 quantize x | x <= fromIntegral l = l
            | fromIntegral h <= x = h
            | otherwise           = round x
