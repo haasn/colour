@@ -1,0 +1,18 @@
+Name:                colour
+Version:             0.0.0
+Cabal-Version:       >= 1.2
+License:             OtherLicense
+Author:              Russell O'Connor
+Maintainer:          roconnor@theorem.ca
+Build-Type:          Simple
+Synopsis:            Colour Library
+Tested-with:         GHC == 6.8.2
+
+Library
+  Build-Depends:     base
+  Exposed-Modules:   Data.Colour
+                     Data.Colour.SRGB
+                     Data.Colour.CIE
+                     Data.Colour.Names
+                     Data.Colour.Rec601
+  Other-Modules:     Data.Colour.Chan
