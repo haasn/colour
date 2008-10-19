@@ -117,10 +117,3 @@ sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
              | otherwise = fst (head rx)
  where
   rx = sRGB24reads x
-
---------------------------------------------------------------------------
-
-sRGB24showlength_prop x = length (sRGB24show x) == 7
-
-readshowSRGB24_prop x =
-  sRGB24show (sRGB24read (sRGB24show x)) == sRGB24show x
