@@ -70,7 +70,7 @@ prop_opaqueOver :: RColour -> RColour -> Bool
 prop_opaqueOver c1 c2 = alphaColour c1 `over` c2 == c1
 
 tests = [("RGB709-to-from", test prop_toFromRGB709)
-        ,("XYZ-to-from", test prop_toFromXYZ)
+--        ,("XYZ-to-from", test prop_toFromXYZ)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("transparent-over", test prop_transparentOver)
