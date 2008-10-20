@@ -32,7 +32,7 @@ where
 
 import Data.Word
 import Numeric
-import Data.Colour
+import Data.Colour.Internal
 
 {- Non-linear colour space -}
 {- the sRGB transfer function approximates a gamma of about 2.2 -}

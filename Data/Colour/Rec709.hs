@@ -24,11 +24,12 @@ module Data.Colour.Rec709
  (luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
+ ,rgb709, toRGB709
  )
 where
 
 import Data.Word
-import Data.Colour
+import Data.Colour.Internal
 import qualified Data.Colour.Luma as L
 
 {- rec 601 luma -}

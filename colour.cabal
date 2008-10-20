@@ -16,5 +16,6 @@ Library
                      Data.Colour.Names
                      Data.Colour.Rec601
                      Data.Colour.Rec709
-  Other-Modules:     Data.Colour.Chan
+  Other-Modules:     Data.Colour.Internal
+                     Data.Colour.Chan
                      Data.Colour.Luma

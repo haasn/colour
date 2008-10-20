@@ -9,6 +9,7 @@ import Text.Printf
 import Data.Colour
 import Data.Colour.SRGB
 import Data.Colour.CIE
+import Data.Colour.Rec709
 
 default (Rational, Double, Float)
 

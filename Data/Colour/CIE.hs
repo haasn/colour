@@ -26,7 +26,7 @@ module Data.Colour.CIE
  )
 where
 
-import Data.Colour
+import Data.Colour.Internal
 import Data.Colour.Names
 
 cieXYZ :: (Fractional a) => a -> a -> a -> Colour a
