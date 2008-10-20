@@ -55,15 +55,11 @@ data Alpha = Alpha
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
 
 instance (Fractional a) => Show (AlphaColour a) where
-  showsPrec _ (RGBA (RGB r g b) (Chan a)) | a == 0 =
-    ("transparent"++)
-                                                    | otherwise =
-    shows c' . (" `withOpacity` "++) . shows a
+  showsPrec _ ac | a == 0 = ("transparent"++)
+                 | otherwise = shows c . (" `withOpacity` "++) . shows a
    where
-    a' = recip a
-    c' = RGB (Chan.scale (recip a') r)
-             (Chan.scale (recip a') g)
-             (Chan.scale (recip a') b)
+    a = alphaChannel ac
+    c = colourChannel ac
 
 transparent :: (Num a) => AlphaColour a
 transparent = RGBA (RGB Chan.empty Chan.empty Chan.empty) Chan.empty
@@ -130,6 +126,21 @@ quantize x | x <= fromIntegral l = l
  where
   l = minBound
   h = maxBound
+
+{- Avoid using -}
+alphaChannel :: AlphaColour a -> a
+alphaChannel (RGBA _ (Chan a)) = a
+
+colourChannel :: (Fractional a) => AlphaColour a -> Colour a
+colourChannel (RGBA (RGB r g b) (Chan a)) | a == 0 =
+  error "Data.Colour: transparent has no colour channel"
+                                          | otherwise =
+  RGB (Chan.scale a' r)
+      (Chan.scale a' g)
+      (Chan.scale a' b)
+
+ where
+  a' = recip a
 
 {- not for export -}
 scale s (RGB r g b) = RGB (Chan.scale s r)

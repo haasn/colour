@@ -64,6 +64,11 @@ instance (Real a, Fractional a, Arbitrary a) =>
     mkAlphaColour :: (Fractional a) => Colour a -> Word8 -> AlphaColour a
     mkAlphaColour c a =
       c `withOpacity` (fromIntegral a/fromIntegral (maxBound `asTypeOf` a))
+  coarbitrary ac | a == 0 = coarbitrary a
+                | otherwise = coarbitrary a . coarbitrary c
+   where
+    a = alphaChannel ac
+    c = colourChannel ac
 
 prop_toFromRGB709 :: RColour -> Bool
 prop_toFromRGB709 c = (rgb709 r g b) == c
