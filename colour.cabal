@@ -19,3 +19,4 @@ Library
   Other-Modules:     Data.Colour.Internal
                      Data.Colour.Chan
                      Data.Colour.Luma
+                     Data.Colour.Matrix

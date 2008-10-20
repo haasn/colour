@@ -28,23 +28,24 @@ where
 
 import Data.Colour.Internal
 import Data.Colour.Names
+import Data.Colour.Matrix
 
 cieXYZ :: (Fractional a) => a -> a -> a -> Colour a
 cieXYZ x y z = rgb709 r g b
  where
-  r = transformBy [ 3.240479, -1.537150, -0.498535]
-  g = transformBy [-0.969256,  1.875992,  0.041556]
-  b = transformBy [ 0.055648, -0.204043,  1.057311]
-  transformBy l = sum $ zipWith (*) l [x,y,z]
+  [r,g,b] = mult (map (map fromRational) xyz2rgb) [x,y,z]
 
 toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
 toCIEXYZ c = (x,y,z)
  where
   (r,g,b) = toRGB709 c
-  x = transformBy [0.412453, 0.357580, 0.180423]
-  y = transformBy [0.212671, 0.715160, 0.072169]
-  z = transformBy [0.019334, 0.119193, 0.950227]
-  transformBy l = sum $ zipWith (*) l [r,g,b]
+  [x,y,z] = mult (map (map fromRational) rgb2xyz) [r,g,b]
+
+rgb2xyz = [[0.412453, 0.357580, 0.180423]
+          ,[0.212671, 0.715160, 0.072169]
+          ,[0.019334, 0.119193, 0.950227]]
+
+xyz2rgb = inverse rgb2xyz
 
 {- CIE luminance -}
 luminance :: (Fractional a) => Colour a -> a

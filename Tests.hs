@@ -70,7 +70,7 @@ prop_toFromRGB709 c = (rgb709 r g b) == c
  where
   (r,g,b) = toRGB709 c
 
-prop_toFromXYZ :: FColour -> Bool
+prop_toFromXYZ :: RColour -> Bool
 prop_toFromXYZ c = (cieXYZ x y z) == c
  where
   (x,y,z) = toCIEXYZ c
@@ -92,7 +92,7 @@ prop_opaqueOver :: RColour -> RColour -> Bool
 prop_opaqueOver c1 c2 = alphaColour c1 `over` c2 == c1
 
 tests = [("RGB709-to-from", test prop_toFromRGB709)
---        ,("XYZ-to-from", test prop_toFromXYZ)
+        ,("XYZ-to-from", test prop_toFromXYZ)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("transparent-over", test prop_transparentOver)
