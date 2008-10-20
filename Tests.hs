@@ -35,8 +35,13 @@ instance (Real a, Fractional a, Arbitrary a) => Arbitrary (Colour a) where
     mkColour r' g' b' = colourConvert (sRGB24 r' g' b'::Colour Double)
   coarbitrary = coarbitrary . toRGB709
 
-instance (Real a, Fractional a, Arbitrary a) => Arbitrary (AlphaColour a) where
-  arbitrary = liftM2 withOpacity arbitrary arbitrary
+instance (Real a, Fractional a, Arbitrary a) =>
+         Arbitrary (AlphaColour a) where
+  arbitrary = liftM2 mkAlphaColour arbitrary arbitrary
+   where
+    mkAlphaColour :: (Fractional a) => Colour a -> Word8 -> AlphaColour a
+    mkAlphaColour c a =
+      c `withOpacity` (fromIntegral a/fromIntegral (maxBound `asTypeOf` a))
 
 prop_toFromRGB709 :: RColour -> Bool
 prop_toFromRGB709 c = (rgb709 r g b) == c
