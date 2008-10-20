@@ -54,6 +54,17 @@ data Alpha = Alpha
 -- premultiplied alpha
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
 
+instance (Fractional a) => Show (AlphaColour a) where
+  showsPrec _ (RGBA (RGB r g b) (Chan a)) | a == 0 =
+    ("transparent"++)
+                                                    | otherwise =
+    shows c' . (" `withOpacity` "++) . shows a
+   where
+    a' = recip a
+    c' = RGB (Chan.scale (recip a') r)
+             (Chan.scale (recip a') g)
+             (Chan.scale (recip a') b)
+
 transparent :: (Num a) => AlphaColour a
 transparent = RGBA (RGB Chan.empty Chan.empty Chan.empty) Chan.empty
 

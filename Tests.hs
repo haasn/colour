@@ -19,9 +19,6 @@ type FColour = Colour Float
 type RAlphaColour = AlphaColour Rational
 type DAlphaColour = AlphaColour Double
 
-instance (Real a) => Show (AlphaColour a) where
-  show _ = ":TODO:SOME ALPHA COLOUR"
-
 instance Arbitrary Word8 where
   arbitrary = liftM fromIntegral $
               choose (fromIntegral (minBound::Word8)::Int,
