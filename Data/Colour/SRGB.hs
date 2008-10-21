@@ -37,15 +37,16 @@ import Data.Colour.Internal
 
 {- Non-linear colour space -}
 {- the sRGB transfer function approximates a gamma of about 2.2 -}
-transferFunction lin | lin <= 0.0031308 = 12.92*lin
-                            | otherwise        = (1 + a)*lin**(1/2.4) - a
+transferFunction lin | lin == 1         = 1
+                     | lin <= 0.0031308 = 12.92*lin
+                     | otherwise        = (1 + a)*lin**(1/2.4) - a
  where
   a = 0.055
 
-invTransferFunction nonLin | nonLin <= 0.04045 =
- nonLin/12.92
+invTransferFunction nonLin | nonLin == 1       = 1
+                           | nonLin <= 0.04045 = nonLin/12.92
                            | otherwise         =
- ((nonLin + a)/(1 + a))**2.4
+  ((nonLin + a)/(1 + a))**2.4
  where
   a = 0.055
 
