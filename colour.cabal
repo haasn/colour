@@ -4,7 +4,7 @@ Cabal-Version:       >= 1.2
 License:             OtherLicense
 License-file:        LICENSE
 Author:              Russell O'Connor
-Maintainer:          roconnor@theorem.ca
+Maintainer:          Russell O'Connor <roconnor@theorem.ca>
 Build-Type:          Simple
 Category:            data
 Synopsis:            A colour model for human vision
