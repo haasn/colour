@@ -24,7 +24,7 @@ module Data.Colour.Luma where
 {- For internal use only:
    Not to be exported from the package -}
 import Data.Colour.SRGB
-import Data.Colour
+import Data.Colour.Internal
 import Data.Word
 
 type LumaCoef = (Rational, Rational, Rational)

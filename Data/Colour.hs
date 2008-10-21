@@ -33,8 +33,6 @@ module Data.Colour
  ,AffineSpace(..), blend
 
  ,compositeWith, Composite(..)
-
- ,quantize
  )
 where
 
