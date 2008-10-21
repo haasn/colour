@@ -84,7 +84,7 @@ class AffineSpace f where
  affineCombo :: (Num a) => [(a,f a)] -> f a -> f a
 
 blend :: (Num a, AffineSpace f) => a -> f a -> f a -> f a
-blend weight c1 c2 = affineCombo [(weight,c2)] c1
+blend weight c1 c2 = affineCombo [(weight,c1)] c2
 
 instance AffineSpace Colour where
  affineCombo l z =
