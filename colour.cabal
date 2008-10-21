@@ -7,6 +7,7 @@ Maintainer:          roconnor@theorem.ca
 Build-Type:          Simple
 Synopsis:            Colour Library
 Tested-with:         GHC == 6.8.2
+extra-source-files:  Tests.hs
 
 Library
   Build-Depends:     base
