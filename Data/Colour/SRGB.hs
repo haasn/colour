@@ -20,6 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
+-- |Specifies 'Colour's in accordance with the sRGB standard.
 module Data.Colour.SRGB
  (sRGB24, sRGBBounded, sRGB
  ,toSRGB24, toSRGBBounded, toSRGB
@@ -48,6 +49,8 @@ invTransferFunction nonLin | nonLin <= 0.04045 =
  where
   a = 0.055
 
+-- |Construct a colour from an sRGB specification.
+-- Input components are expected to be in the range [0..1].
 sRGB :: (Ord b, Floating b) =>  b -> b -> b -> Colour b
 sRGB r' g' b' = rgb709 r g b
  where
@@ -55,6 +58,8 @@ sRGB r' g' b' = rgb709 r g b
   g = invTransferFunction g'
   b = invTransferFunction b'
 
+-- |Construct a colour from an sRGB specification.
+-- Input components are expected to be in the range [0..'maxBound'].
 sRGBBounded :: (Ord b, Floating b, Integral a, Bounded a) =>
                a -> a -> a -> Colour b
 sRGBBounded r' g' b' = sRGB (fromIntegral r'/m)
@@ -63,9 +68,12 @@ sRGBBounded r' g' b' = sRGB (fromIntegral r'/m)
  where
   m = fromIntegral $ maxBound `asTypeOf` r'
 
+-- |Construct a colour from a 24-bit (three 8-bit words) sRGB
+-- specification.
 sRGB24 :: (Ord b, Floating b) => Word8 -> Word8 -> Word8 -> Colour b
 sRGB24 = sRGBBounded
 
+-- |Return the sRGB colour components in the range [0..1].
 toSRGB :: (RealFrac b, Floating b) => Colour b -> (b, b, b)
 toSRGB c = (r', g', b')
  where
@@ -75,7 +83,9 @@ toSRGB c = (r', g', b')
   b' = transferFunction b
 
 {- Results are clamped and quantized -}
-
+-- |Return the approximate sRGB colour components in the range
+-- [0..'maxBound'].
+-- Out of range values are clamped.
 toSRGBBounded :: (RealFrac b, Floating b, Integral a, Bounded a) =>
                  Colour b -> (a,a,a)
 toSRGBBounded c = (r', g', b')
@@ -84,9 +94,13 @@ toSRGBBounded c = (r', g', b')
   (r', g', b') = (quantize (m*r'0), quantize (m*g'0), quantize (m*b'0))
   m = fromIntegral $ maxBound `asTypeOf` r'
 
+-- |Return the approximate 24-bit sRGB colour components as three 8-bit
+-- components.
+-- Out of range values are clamped.
 toSRGB24 :: (RealFrac b, Floating b) => Colour b -> (Word8, Word8, Word8)
 toSRGB24 = toSRGBBounded
 
+-- |Show a colour in hexadecimal form, e.g. \"#00aaff\"
 sRGB24shows :: (RealFrac b, Floating b) => Colour b -> ShowS
 sRGB24shows c =
   ("#"++) . showHex2 r' . showHex2 g' . showHex2 b'
@@ -95,9 +109,11 @@ sRGB24shows c =
   showHex2 x | x <= 0xf = ("0"++) . showHex x
              | otherwise = showHex x
 
+-- |Show a colour in hexadecimal form, e.g. \"#00aaff\"
 sRGB24show :: (RealFrac b, Floating b) => Colour b -> String
 sRGB24show x = sRGB24shows x ""
 
+-- |Read a colour in hexadecimal form, e.g. \"#00aaff\" or \"00aaff\"
 sRGB24reads :: (RealFrac b, Floating b) => ReadS (Colour b)
 sRGB24reads "" = []
 sRGB24reads x =
@@ -112,6 +128,7 @@ sRGB24reads x =
    where
     (a0,a1) = splitAt 2 a
 
+-- |Read a colour in hexadecimal form, e.g. \"#00aaff\" or \"00aaff\"
 sRGB24read :: (RealFrac b, Floating b) => String -> (Colour b)
 sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
   error "Data.Colour.SRGB.sRGB24read: no parse"

@@ -20,19 +20,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
+-- |Datatypes for representing the human perception of colour.
+-- Includes common operations for blending and compositing colours.
+-- The most common way of creating colours is either by name
+-- (see "Data.Colour.Names") or by giving an sRGB triple 
+-- (see "Data.Colour.SRGB").
+--
+-- Methods of specifying Colours can be found in 
+--
+-- - "Data.Colour.SRGB"
+--
+-- - "Data.Colour.CIE"
+--
+-- - "Data.Colour.Rec709"
+--
+-- - "Data.Colour.Rec601"
 module Data.Colour
  (Colour
  ,colourConvert
 
  ,AlphaColour
- ,alphaChannel, colourChannel
  ,alphaColour, fade, withOpacity
  ,transparent
  ,alphaColourConvert
+ ,alphaChannel, colourChannel
 
  ,AffineSpace(..), blend
 
- ,compositeWith, Composite(..)
+ ,Composite(..), compositeWith
  )
 where
 

@@ -20,6 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
+-- | Colour operations defined by the International Commission on 
+-- Illumination (CIE).
 module Data.Colour.CIE
  (cieXYZ, toCIEXYZ, luminance
  ,lightness, cieLab, cieLuv
@@ -30,11 +32,15 @@ import Data.Colour.Internal
 import Data.Colour.Names
 import Data.Colour.Matrix
 
+-- |Construct a 'Colour' from XYZ coordinates for the 2° standard
+-- (colourimetric) observer.
 cieXYZ :: (Fractional a) => a -> a -> a -> Colour a
 cieXYZ x y z = rgb709 r g b
  where
   [r,g,b] = mult (map (map fromRational) xyz2rgb) [x,y,z]
 
+-- |Return the XYZ colour coordinates for the 2° standard
+-- (colourimetric) observer.
 toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
 toCIEXYZ c = (x,y,z)
  where
@@ -48,17 +54,23 @@ rgb2xyz = [[0.412453, 0.357580, 0.180423]
 xyz2rgb = inverse rgb2xyz
 
 {- CIE luminance -}
+-- |Returns the Y colour coordinate (luminance) for the 2° standard
+-- (colourimetric) observer.
 luminance :: (Fractional a) => Colour a -> a
 luminance c = y
  where
   (x,y,z) = toCIEXYZ c
 
+-- |Returns the lightness of a colour, which is a perceptually uniform
+-- measure.
 lightness :: (Ord a, Floating a) => Colour a -> a
 lightness c | 0.008856 < y = 116*y**(1/3) - 16
             | otherwise = 903.3*y
  where
   y = luminance c
 
+-- |Returns the CIELAB coordinates of a colour, which is a
+-- perceptually uniform colour space.
 cieLab :: (Ord a, Floating a) => Colour a -> (a,a,a)
 cieLab c = (lightness c, a, b)
  where
@@ -67,6 +79,8 @@ cieLab c = (lightness c, a, b)
   a = 500*((x/xn)**(1/3) - (y/yn)**(1/3))
   b = 200*((y/yn)**(1/3) - (z/zn)**(1/3))
 
+-- |Returns the CIELUV coordinates of a colour, which is a
+-- perceptually uniform colour space.
 cieLuv :: (Ord a, Floating a) => Colour a -> (a,a,a)
 cieLuv c = (l, 13*l*(u'-un'), 13*l*(v'-vn'))
  where

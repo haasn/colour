@@ -26,19 +26,27 @@ import Data.List
 import qualified Data.Colour.Chan as Chan
 import Data.Colour.Chan (Chan(Chan))
 
-{- Internal representation is
-   Rec. 709 Primaries and D65 white point -}
 data Red = Red
 data Green = Green
 data Blue = Blue
+
+-- |This type represents the human preception of colour.
+-- The @a@ parameter is a numeric type used internally for the representation.
+
+-- Internally we store the colour in linear ITU-R BT.709 RGB colour space. 
 data Colour a = RGB !(Chan Red a) !(Chan Green a) !(Chan Blue a) deriving (Eq)
 
+-- |Constructs a 'Colour' from RGB values using the /linear/ RGB colour
+-- space specified in Rec.709.
 rgb709 :: a -> a -> a -> Colour a
 rgb709 r g b = RGB (Chan r) (Chan g) (Chan b)
 
+-- |Return RGB values using the /linear/ RGB colour space specified in
+-- Rec.709.
 toRGB709 :: Colour a -> (a,a,a)
 toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = (r,g,b)
 
+-- |Change the type used to represent the colour coordinates.
 colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
@@ -51,7 +59,10 @@ instance (Show a) => Show (Colour a) where
     (r,g,b) = toRGB709 c
 
 data Alpha = Alpha
--- premultiplied alpha
+
+-- |This type represents a 'Colour' that may be semi-transparent.
+
+-- Internally we use a premultiplied-alpha representation.
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
 
 instance (Fractional a) => Show (AlphaColour a) where
@@ -61,28 +72,46 @@ instance (Fractional a) => Show (AlphaColour a) where
     a = alphaChannel ac
     c = colourChannel ac
 
+-- |This 'AlphaColour' is entirely transparent and has no associated
+-- 'colourChannel'.
 transparent :: (Num a) => AlphaColour a
 transparent = RGBA (RGB Chan.empty Chan.empty Chan.empty) Chan.empty
 
+-- |Change the type used to represent the colour coordinates.
 alphaColourConvert :: (Fractional b, Real a) =>
   AlphaColour a -> AlphaColour b
 alphaColourConvert (RGBA c a) = RGBA (colourConvert c) (Chan.convert a)
 
+-- |Creates an opaque 'AlphaColour' from a 'Colour'.
 alphaColour :: (Num a) => Colour a -> AlphaColour a
 alphaColour c = RGBA c Chan.full
 
+-- |Returns a 'AlphaColour' more transparent by a factor of @o@.
 fade :: (Num a) => a -> AlphaColour a -> AlphaColour a
 fade o (RGBA c a) = RGBA (scale o c) (Chan.scale o a)
 
-{- c `withOpacity` o == fade o (toRGBA c) -}
+-- |Creates an 'AlphaColour' from a 'Colour' with a given opacity.
+--
+-- >c `withOpacity` o == fade o (alphaColour c) 
 withOpacity :: (Num a) => Colour a -> a -> AlphaColour a
 c `withOpacity` o = RGBA (scale o c) (Chan o)
 
-{- blend -}
+--------------------------------------------------------------------------
+-- Blending
+--------------------------------------------------------------------------
 
 class AffineSpace f where
+ -- |Compute a affine Combination (weighted-average) of points.
+ -- The last parameter will get the remaining weight.
+ -- e.g.
+ --
+ -- >affineCombo [(0.2,a), (0.3,b)] c == 0.2*a + 0.3*b + 0.4*c
  affineCombo :: (Num a) => [(a,f a)] -> f a -> f a
 
+-- |Compute the weighted average of two points.
+-- e.g.
+--
+-- >blend 0.4 a b = 0.4*a + 0.6*b
 blend :: (Num a, AffineSpace f) => a -> f a -> f a -> f a
 blend weight c1 c2 = affineCombo [(weight,c1)] c2
 
@@ -98,12 +127,14 @@ instance AffineSpace AlphaColour where
   where
    total = sum $ map fst l
 
-{- compose -}
-
-compositeWith :: (Num a) => a -> Colour a -> Colour a -> Colour a
-compositeWith a c1 c2 = (c1 `withOpacity` a) `over` c2
+--------------------------------------------------------------------------
+-- composite
+--------------------------------------------------------------------------
 
 class Composite f where
+ -- |@c1 \`over\` c2@ returns the 'Colour' created by compositing the
+ -- 'AlphaColour' @c1@ over @c2@, which may be either a 'Colour' or
+ -- 'AlphaColour'.
  over :: (Num a) => AlphaColour a -> f a -> f a
 
 instance Composite Colour where
@@ -116,6 +147,11 @@ instance Composite AlphaColour where
  c0@(RGBA _ a0@(Chan a0')) `over` (RGBA c1 a1) =
    RGBA (c0 `over` c1) (Chan.over a0 a0' a1)
 
+-- |Composites @c1@ over @c2@ using opacity @a@.
+compositeWith :: (Num a) => a -> Colour a -> Colour a -> Colour a
+compositeWith a c1 c2 = (c1 `withOpacity` a) `over` c2
+
+-- |'round's and then clamps @x@ between 0 and 'maxBound'.
 quantize :: (RealFrac a1, Integral a, Bounded a) => a1 -> a
 quantize x | x <= fromIntegral l = l
            | fromIntegral h <= x = h
@@ -125,9 +161,21 @@ quantize x | x <= fromIntegral l = l
   h = maxBound
 
 {- Avoid using -}
+-- |Returns the opacity of an 'AlphaColour'.
+-- This function is provided only for converting to other datatypes.
+-- Its use is discouraged.
+-- Instead compose the 'AlphaColour' with another 'Colour' and extract
+-- the resulting 'Colour' components.
 alphaChannel :: AlphaColour a -> a
 alphaChannel (RGBA _ (Chan a)) = a
 
+-- |Returns the colour of an 'AlphaColour'.
+-- @colourChannel transparent@ is undefined and may result in @nan@ or an
+-- error.
+-- This function is provided only for converting to other datatypes.
+-- Its use is discouraged.
+-- Instead compose the 'AlphaColour' with another 'Colour' and extract the
+-- resulting 'Colour' components.
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a
 colourChannel (RGBA (RGB r g b) (Chan a)) =
   RGB (Chan.scale a' r)
@@ -137,7 +185,10 @@ colourChannel (RGBA (RGB r g b) (Chan a)) =
  where
   a' = recip a
 
-{- not for export -}
+--------------------------------------------------------------------------
+-- not for export
+--------------------------------------------------------------------------
+
 scale s (RGB r g b) = RGB (Chan.scale s r)
                           (Chan.scale s g)
                           (Chan.scale s b)

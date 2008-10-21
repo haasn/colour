@@ -20,6 +20,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
+-- |Defines the Y'CbCr and Y'PbPr colour spaces in accordance with
+-- ITU-R Recommendation BT.601 used for high definition television
+-- (HDTV).
+--
+-- For standard definition television (SDTV) see "Data.Colour.Rec601".
+--
+-- Also allows you to create a colour from /linear/ coordinates using
+-- the ITU-R Recommendation BT.601 RGB primaries, which are the
+-- primaries used in sRGB.
+-- See also "Data.Colour.SRGB".
 module Data.Colour.Rec709
  (luma
  ,y'PbPr, toY'PbPr
@@ -33,18 +43,23 @@ import Data.Colour.Internal
 import qualified Data.Colour.Luma as L
 
 {- rec 601 luma -}
+-- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Floating a, RealFrac a) => Colour a -> a
 luma = L.luma lumaCoef
 
+-- |Construct a 'Colour' from Y'PbPr coordinates.
 y'PbPr :: (Floating a, RealFrac a)  => a -> a -> a -> Colour a
 y'PbPr = L.y'PbPr lumaCoef
 
+-- |Returns the Y'PbPr coordinates of a 'Colour'.
 toY'PbPr :: (Floating a, RealFrac a)  => Colour a -> (a, a, a)
 toY'PbPr = L.toY'PbPr lumaCoef
 
+-- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.
 y'CbCr :: (Floating a, RealFrac a)  => Word8 -> Word8 -> Word8 -> Colour a
 y'CbCr = L.y'CbCr lumaCoef
 
+-- |Returns the Y'CbCr 8-bit coordinates of a 'Colour'.
 toY'CbCr :: (Floating a, RealFrac a)  => Colour a -> (Word8, Word8, Word8)
 toY'CbCr = L.toY'CbCr lumaCoef
 
