@@ -2,6 +2,7 @@ Name:                colour
 Version:             0.0.0
 Cabal-Version:       >= 1.2
 License:             OtherLicense
+License-file:        LICENSE
 Author:              Russell O'Connor
 Maintainer:          roconnor@theorem.ca
 Build-Type:          Simple
@@ -12,7 +13,7 @@ Description:         This package provides a data type for colours.
                      Various colour spaces are supported.
                      A module of colour names ("Data.Colour.Names") is provided.
 Tested-with:         GHC == 6.8.2
-extra-source-files:  Tests.hs
+extra-source-files:  Tests.hs README
 
 Library
   Build-Depends:     base
