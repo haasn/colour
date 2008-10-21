@@ -5,6 +5,7 @@ License:             OtherLicense
 Author:              Russell O'Connor
 Maintainer:          roconnor@theorem.ca
 Build-Type:          Simple
+Category:            data
 Synopsis:            Colour Library
 Tested-with:         GHC == 6.8.2
 extra-source-files:  Tests.hs
