@@ -34,11 +34,11 @@ luma :: (Floating a, RealFrac a) => LumaCoef -> Colour a -> a
 luma (lr, lg, lb) c =
   transformBy [fromRational lr, fromRational lr, fromRational lr]
  where
-  (r',g',b') = toSRGBranged 1.0 c
+  (r',g',b') = toSRGB c
   transformBy l = sum $ zipWith (*) l [r',g',b']
 
 y'PbPr :: (Floating a, RealFrac a) => LumaCoef -> a -> a -> a -> Colour a
-y'PbPr (lr, lg, lb) y' pb pr = sRGBranged 1.0 r' g' b'
+y'PbPr (lr, lg, lb) y' pb pr = sRGB r' g' b'
  where
   r' = y' + fromRational ((lg + lb)/0.5)*pr
   g' = (y' - fromRational lr*r' - fromRational lb*b')/fromRational lg
@@ -48,7 +48,7 @@ toY'PbPr :: (Floating a, RealFrac a) => LumaCoef -> Colour a -> (a, a, a)
 toY'PbPr l@(lr, lg, lb) c = (y', pb, pr)
  where
   y' = luma l c
-  (r', g', b') = toSRGBranged 1.0 c
+  (r', g', b') = toSRGB c
   pb = fromRational (0.5/(lg + lr))*(b' - y')
   pr = fromRational (0.5/(lg + lb))*(r' - y')
 

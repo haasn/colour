@@ -21,8 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 module Data.Colour.SRGB
- (sRGBranged, sRGB, sRGB24
- ,toSRGBranged, toSRGB, toSRGB24
+ (sRGB24, sRGBBounded, sRGB
+ ,toSRGB24, toSRGBBounded, toSRGB
 
  ,sRGB24shows, sRGB24show
  ,sRGB24reads, sRGB24read
@@ -48,43 +48,44 @@ invTransferFunction nonLin | nonLin <= 0.04045 =
  where
   a = 0.055
 
-sRGBranged :: (Ord b, Floating b) => b -> b -> b -> b -> Colour b
-sRGBranged m r' g' b' = rgb709 r g b
+sRGB :: (Ord b, Floating b) =>  b -> b -> b -> Colour b
+sRGB r' g' b' = rgb709 r g b
  where
-  r = invTransferFunction (r'/m)
-  g = invTransferFunction (g'/m)
-  b = invTransferFunction (b'/m)
+  r = invTransferFunction r'
+  g = invTransferFunction g'
+  b = invTransferFunction b'
 
-sRGB :: (Ord b, Floating b, Integral a, Bounded a) =>
-        a -> a -> a -> Colour b
-sRGB r' g' b' = sRGBranged (fromIntegral $ maxBound `asTypeOf` r')
-                           (fromIntegral r')
-                           (fromIntegral g')
-                           (fromIntegral b')
+sRGBBounded :: (Ord b, Floating b, Integral a, Bounded a) =>
+               a -> a -> a -> Colour b
+sRGBBounded r' g' b' = sRGB (fromIntegral r'/m)
+                            (fromIntegral g'/m)
+                            (fromIntegral b'/m)
+ where
+  m = fromIntegral $ maxBound `asTypeOf` r'
 
 sRGB24 :: (Ord b, Floating b) => Word8 -> Word8 -> Word8 -> Colour b
-sRGB24 = sRGB
+sRGB24 = sRGBBounded
 
-toSRGBranged :: (RealFrac b, Floating b) =>
-                b -> Colour b -> (b, b, b)
-toSRGBranged m c = (r', g', b')
- where
-  (r,g,b) = toRGB709 c
-  r' = m*transferFunction r
-  g' = m*transferFunction g
-  b' = m*transferFunction b
-
-{- Results are clamped and quantized -}
-toSRGB :: (RealFrac b, Floating b, Integral a, Bounded a) =>
-          Colour b -> (a,a,a)
+toSRGB :: (RealFrac b, Floating b) => Colour b -> (b, b, b)
 toSRGB c = (r', g', b')
  where
-  (r'0, g'0, b'0) = toSRGBranged (fromIntegral m) c
-  (r', g', b') = (quantize r'0, quantize g'0, quantize b'0)
-  m = maxBound `asTypeOf` r'
+  (r,g,b) = toRGB709 c
+  r' = transferFunction r
+  g' = transferFunction g
+  b' = transferFunction b
+
+{- Results are clamped and quantized -}
+
+toSRGBBounded :: (RealFrac b, Floating b, Integral a, Bounded a) =>
+                 Colour b -> (a,a,a)
+toSRGBBounded c = (r', g', b')
+ where
+  (r'0, g'0, b'0) = toSRGB c
+  (r', g', b') = (quantize (m*r'0), quantize (m*g'0), quantize (m*b'0))
+  m = fromIntegral $ maxBound `asTypeOf` r'
 
 toSRGB24 :: (RealFrac b, Floating b) => Colour b -> (Word8, Word8, Word8)
-toSRGB24 = toSRGB
+toSRGB24 = toSRGBBounded
 
 sRGB24shows :: (RealFrac b, Floating b) => Colour b -> ShowS
 sRGB24shows c =
