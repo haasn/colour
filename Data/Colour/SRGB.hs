@@ -114,7 +114,7 @@ sRGB24reads x =
 
 sRGB24read :: (RealFrac b, Floating b) => String -> (Colour b)
 sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
-  error "Data.Colour.SRGB.readSRGB24: no parse"
+  error "Data.Colour.SRGB.sRGB24read: no parse"
              | otherwise = fst (head rx)
  where
   rx = sRGB24reads x
