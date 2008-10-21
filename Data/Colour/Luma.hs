@@ -32,7 +32,7 @@ type LumaCoef = (Rational, Rational, Rational)
 {- rec 709 luma -}
 luma :: (Floating a, RealFrac a) => LumaCoef -> Colour a -> a
 luma (lr, lg, lb) c =
-  transformBy [fromRational lr, fromRational lr, fromRational lr]
+  transformBy [fromRational lr, fromRational lg, fromRational lb]
  where
   (r',g',b') = toSRGB c
   transformBy l = sum $ zipWith (*) l [r',g',b']
