@@ -129,9 +129,7 @@ alphaChannel :: AlphaColour a -> a
 alphaChannel (RGBA _ (Chan a)) = a
 
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a
-colourChannel (RGBA (RGB r g b) (Chan a)) | a == 0 =
-  error "Data.Colour: transparent has no colour channel"
-                                          | otherwise =
+colourChannel (RGBA (RGB r g b) (Chan a)) =
   RGB (Chan.scale a' r)
       (Chan.scale a' g)
       (Chan.scale a' b)
