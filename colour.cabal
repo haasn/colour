@@ -6,7 +6,11 @@ Author:              Russell O'Connor
 Maintainer:          roconnor@theorem.ca
 Build-Type:          Simple
 Category:            data
-Synopsis:            Colour Library
+Synopsis:            A colour model for human vision
+Description:         This package provides a data type for colours.
+                     Colours can be blended and composed.
+                     Various colour spaces are supported.
+                     A module of colour names ("Data.Colour.Names") is provided.
 Tested-with:         GHC == 6.8.2
 extra-source-files:  Tests.hs
 
