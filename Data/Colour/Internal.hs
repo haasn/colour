@@ -101,10 +101,7 @@ instance AffineSpace AlphaColour where
 {- compose -}
 
 compositeWith :: (Num a) => a -> Colour a -> Colour a -> Colour a
-compositeWith a (RGB r0 g0 b0) (RGB r1 g1 b1) =
-  RGB (Chan.over r0 a r1)
-      (Chan.over g0 a g1)
-      (Chan.over b0 a b1)
+compositeWith a c1 c2 = (c1 `withOpacity` a) `over` c2
 
 class Composite f where
  over :: (Num a) => AlphaColour a -> f a -> f a
