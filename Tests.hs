@@ -105,6 +105,12 @@ prop_fromToY'CbCr601 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr601 y' cb cr =
   SDTV.toY'CbCr (SDTV.y'CbCr y' cb cr) == (y',cb,cr)
 
+prop_fadeId :: RAlphaColour -> Bool
+prop_fadeId c = fade 1 c == c
+
+prop_fadeTransparent :: RAlphaColour -> Bool
+prop_fadeTransparent c = fade 0 c == transparent
+
 prop_transparentOver :: RColour -> Bool
 prop_transparentOver c = transparent `over` c == c
 
@@ -114,6 +120,9 @@ prop_overTransparent c = c `over` transparent == c
 prop_opaqueOver :: RColour -> RColour -> Bool
 prop_opaqueOver c1 c2 = opaque c1 `over` c2 == c1
 
+prop_overOpaque :: RAlphaColour -> RColour -> Bool
+prop_overOpaque c1 c2 = c1 `over` opaque c2 == opaque (c1 `over` c2)
+
 prop_blendOver :: Rational -> RColour -> RColour -> Bool
 prop_blendOver o c1 c2 = 
   (c1 `withOpacity` o) `over` c2 == blend o c1 c2
@@ -121,6 +130,10 @@ prop_blendOver o c1 c2 =
 prop_blendTransparent :: Rational -> Rational -> RColour -> Bool
 prop_blendTransparent o a c = 
   blend o (c `withOpacity` a) transparent == c `withOpacity ` (o*a)
+
+prop_blendFlip :: Rational -> RColour -> RColour -> Bool
+prop_blendFlip o c1 c2 = 
+  blend (1-o) c2 c1 == blend o c1 c2
 
 prop_sRGB24showlength :: DColour -> Bool
 prop_sRGB24showlength c = length (sRGB24show c) == 7
@@ -140,11 +153,15 @@ tests = [("RGB709-to-from", test prop_toFromRGB709)
         ,("sRGB-from-to", test prop_fromToSRGB)
         ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
         ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr709)
+        ,("fade-id", test prop_fadeId)
+        ,("fade-transparent", test prop_fadeTransparent)
         ,("transparent-over", test prop_transparentOver)
         ,("over-transparent", test prop_overTransparent)
         ,("opaque-over", test prop_opaqueOver)
+        ,("over-opaque", test prop_overOpaque)
         ,("blend-over", test prop_blendOver)
         ,("blend-transparent", test prop_blendTransparent)
+        ,("blend-flip", test prop_blendFlip)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("luminance-white", check defaultConfig{configMaxTest = 1}
