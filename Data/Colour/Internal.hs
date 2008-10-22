@@ -148,10 +148,6 @@ instance Composite AlphaColour where
  c0@(RGBA _ a0@(Chan a0')) `over` (RGBA c1 a1) =
    RGBA (c0 `over` c1) (Chan.over a0 a0' a1)
 
--- |Composites @c1@ over @c2@ using opacity @a@.
-compositeWith :: (Num a) => a -> Colour a -> Colour a -> Colour a
-compositeWith a c1 c2 = (c1 `withOpacity` a) `over` c2
-
 -- | 'AlphaColour' forms a monoid with 'over' and 'transparent'.
 instance (Num a) => Monoid (AlphaColour a) where
   mempty = transparent
