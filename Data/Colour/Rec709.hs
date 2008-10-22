@@ -21,13 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 -- |Defines the Y'CbCr and Y'PbPr colour spaces in accordance with
--- ITU-R Recommendation BT.601 used for high definition television
+-- ITU-R Recommendation BT.709 used for high definition television
 -- (HDTV).
 --
 -- For standard definition television (SDTV) see "Data.Colour.Rec601".
 --
 -- Also allows you to create a colour from /linear/ coordinates using
--- the ITU-R Recommendation BT.601 RGB primaries, which are the
+-- the ITU-R Recommendation BT.709 RGB primaries, which are the
 -- primaries used in sRGB.
 -- See also "Data.Colour.SRGB".
 module Data.Colour.Rec709
