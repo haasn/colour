@@ -6,7 +6,7 @@ License-file:        LICENSE
 Author:              Russell O'Connor
 Maintainer:          Russell O'Connor <roconnor@theorem.ca>
 Build-Type:          Simple
-Category:            data
+Category:            data, graphics
 Synopsis:            A colour model for human vision
 Description:         This package provides a data type for colours.
                      Colours can be blended and composed.
