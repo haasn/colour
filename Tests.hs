@@ -114,6 +114,14 @@ prop_overTransparent c = c `over` transparent == c
 prop_opaqueOver :: RColour -> RColour -> Bool
 prop_opaqueOver c1 c2 = alphaColour c1 `over` c2 == c1
 
+prop_blendOver :: Rational -> RColour -> RColour -> Bool
+prop_blendOver o c1 c2 = 
+  (c1 `withOpacity` o) `over` c2 == blend o c1 c2
+
+prop_blendTransparent :: Rational -> Rational -> RColour -> Bool
+prop_blendTransparent o a c = 
+  blend o (c `withOpacity` a) transparent == c `withOpacity ` (o*a)
+
 prop_sRGB24showlength :: DColour -> Bool
 prop_sRGB24showlength c = length (sRGB24show c) == 7
 
@@ -135,6 +143,8 @@ tests = [("RGB709-to-from", test prop_toFromRGB709)
         ,("transparent-over", test prop_transparentOver)
         ,("over-transparent", test prop_overTransparent)
         ,("opaque-over", test prop_opaqueOver)
+        ,("blend-over", test prop_blendOver)
+        ,("blend-transparent", test prop_blendTransparent)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("luminance-white", check defaultConfig{configMaxTest = 1}
