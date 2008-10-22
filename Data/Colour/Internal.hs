@@ -25,6 +25,7 @@ module Data.Colour.Internal where
 import Data.List
 import qualified Data.Colour.Chan as Chan
 import Data.Colour.Chan (Chan(Chan))
+import Data.Monoid
 
 data Red = Red
 data Green = Green
@@ -150,6 +151,11 @@ instance Composite AlphaColour where
 -- |Composites @c1@ over @c2@ using opacity @a@.
 compositeWith :: (Num a) => a -> Colour a -> Colour a -> Colour a
 compositeWith a c1 c2 = (c1 `withOpacity` a) `over` c2
+
+-- | 'AlphaColour' forms a monoid with 'over' and 'transparent'.
+instance (Num a) => Monoid (AlphaColour a) where
+  mempty = transparent
+  mappend = over
 
 -- |'round's and then clamps @x@ between 0 and 'maxBound'.
 quantize :: (RealFrac a1, Integral a, Bounded a) => a1 -> a
