@@ -21,8 +21,8 @@ Library
                      Data.Colour.SRGB
                      Data.Colour.CIE
                      Data.Colour.Names
-                     Data.Colour.Rec601
-                     Data.Colour.Rec709
+                     Data.Colour.SDTV
+                     Data.Colour.HDTV
   Other-Modules:     Data.Colour.Internal
                      Data.Colour.Chan
                      Data.Colour.Luma

@@ -24,8 +24,8 @@ THE SOFTWARE.
 -- ITU-R Recommendation BT.601 used for standard definition television
 -- (SDTV).
 --
--- For high definition television (HDTV) see "Data.Colour.Rec709".
-module Data.Colour.Rec601
+-- For high definition television (HDTV) see "Data.Colour.HDTV".
+module Data.Colour.SDTV
  (luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr

@@ -24,13 +24,13 @@ THE SOFTWARE.
 -- ITU-R Recommendation BT.709 used for high definition television
 -- (HDTV).
 --
--- For standard definition television (SDTV) see "Data.Colour.Rec601".
+-- For standard definition television (SDTV) see "Data.Colour.SDTV".
 --
 -- Also allows you to create a colour from /linear/ coordinates using
 -- the ITU-R Recommendation BT.709 RGB primaries, which are the
 -- primaries used in sRGB.
 -- See also "Data.Colour.SRGB".
-module Data.Colour.Rec709
+module Data.Colour.HDTV
  (luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr

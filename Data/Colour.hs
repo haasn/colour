@@ -32,9 +32,9 @@ THE SOFTWARE.
 --
 -- - "Data.Colour.CIE"
 --
--- - "Data.Colour.Rec709"
+-- - "Data.Colour.HDTV"
 --
--- - "Data.Colour.Rec601"
+-- - "Data.Colour.SDTV"
 module Data.Colour
  (Colour
  ,colourConvert

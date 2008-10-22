@@ -32,8 +32,8 @@ import Data.Colour
 import Data.Colour.SRGB
 import Data.Colour.CIE
 import Data.Colour.Names
-import Data.Colour.Rec709 as Rec709
-import qualified Data.Colour.Rec601 as Rec601
+import Data.Colour.HDTV as HDTV
+import qualified Data.Colour.SDTV as SDTV
 
 default (Rational, Double, Float)
 
@@ -99,11 +99,11 @@ prop_fromToSRGB r' g' b' = toSRGB24 (sRGB24 r' g' b') == (r',g',b')
 
 prop_fromToY'CbCr709 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr709 y' cb cr =
-  Rec709.toY'CbCr (Rec709.y'CbCr y' cb cr) == (y',cb,cr)
+  HDTV.toY'CbCr (HDTV.y'CbCr y' cb cr) == (y',cb,cr)
 
 prop_fromToY'CbCr601 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr601 y' cb cr =
-  Rec601.toY'CbCr (Rec601.y'CbCr y' cb cr) == (y',cb,cr)
+  SDTV.toY'CbCr (SDTV.y'CbCr y' cb cr) == (y',cb,cr)
 
 prop_transparentOver :: RColour -> Bool
 prop_transparentOver c = transparent `over` c == c
