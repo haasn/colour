@@ -83,8 +83,8 @@ alphaColourConvert :: (Fractional b, Real a) =>
 alphaColourConvert (RGBA c a) = RGBA (colourConvert c) (Chan.convert a)
 
 -- |Creates an opaque 'AlphaColour' from a 'Colour'.
-alphaColour :: (Num a) => Colour a -> AlphaColour a
-alphaColour c = RGBA c Chan.full
+opaque :: (Num a) => Colour a -> AlphaColour a
+opaque c = RGBA c Chan.full
 
 -- |Returns a 'AlphaColour' more transparent by a factor of @o@.
 fade :: (Num a) => a -> AlphaColour a -> AlphaColour a
@@ -92,7 +92,7 @@ fade o (RGBA c a) = RGBA (scale o c) (Chan.scale o a)
 
 -- |Creates an 'AlphaColour' from a 'Colour' with a given opacity.
 --
--- >c `withOpacity` o == fade o (alphaColour c) 
+-- >c `withOpacity` o == fade o (opaque c) 
 withOpacity :: (Num a) => Colour a -> a -> AlphaColour a
 c `withOpacity` o = RGBA (scale o c) (Chan o)
 

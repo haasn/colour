@@ -112,7 +112,7 @@ prop_overTransparent :: RAlphaColour -> Bool
 prop_overTransparent c = c `over` transparent == c
 
 prop_opaqueOver :: RColour -> RColour -> Bool
-prop_opaqueOver c1 c2 = alphaColour c1 `over` c2 == c1
+prop_opaqueOver c1 c2 = opaque c1 `over` c2 == c1
 
 prop_blendOver :: Rational -> RColour -> RColour -> Bool
 prop_blendOver o c1 c2 = 

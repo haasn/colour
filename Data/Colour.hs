@@ -40,7 +40,7 @@ module Data.Colour
  ,colourConvert
 
  ,AlphaColour
- ,alphaColour, fade, withOpacity
+ ,opaque, fade, withOpacity
  ,transparent
  ,alphaColourConvert
  ,alphaChannel, colourChannel
