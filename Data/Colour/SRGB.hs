@@ -75,7 +75,7 @@ sRGB24 :: (Ord b, Floating b) => Word8 -> Word8 -> Word8 -> Colour b
 sRGB24 = sRGBBounded
 
 -- |Return the sRGB colour components in the range [0..1].
-toSRGB :: (RealFrac b, Floating b) => Colour b -> (b, b, b)
+toSRGB :: (Ord b, Floating b) => Colour b -> (b, b, b)
 toSRGB c = (r', g', b')
  where
   (r,g,b) = toRGB709 c

@@ -30,21 +30,21 @@ import Data.Word
 type LumaCoef = (Rational, Rational, Rational)
 
 {- rec 709 luma -}
-luma :: (Floating a, RealFrac a) => LumaCoef -> Colour a -> a
+luma :: (Ord a, Floating a) => LumaCoef -> Colour a -> a
 luma (lr, lg, lb) c =
   transformBy [fromRational lr, fromRational lg, fromRational lb]
  where
   (r',g',b') = toSRGB c
   transformBy l = sum $ zipWith (*) l [r',g',b']
 
-y'PbPr :: (Floating a, RealFrac a) => LumaCoef -> a -> a -> a -> Colour a
+y'PbPr :: (Ord a, Floating a) => LumaCoef -> a -> a -> a -> Colour a
 y'PbPr (lr, lg, lb) y' pb pr = sRGB r' g' b'
  where
   r' = y' + fromRational ((lg + lb)/0.5)*pr
   g' = (y' - fromRational lr*r' - fromRational lb*b')/fromRational lg
   b' = y' + fromRational ((lg + lr)/0.5)*pb
 
-toY'PbPr :: (Floating a, RealFrac a) => LumaCoef -> Colour a -> (a, a, a)
+toY'PbPr :: (Ord a, Floating a) => LumaCoef -> Colour a -> (a, a, a)
 toY'PbPr l@(lr, lg, lb) c = (y', pb, pr)
  where
   y' = luma l c
