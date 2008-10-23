@@ -44,15 +44,15 @@ import qualified Data.Colour.Luma as L
 
 {- rec 601 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
-luma :: (Floating a, RealFrac a) => Colour a -> a
+luma :: (Ord a, Floating a) => Colour a -> a
 luma = L.luma lumaCoef
 
 -- |Construct a 'Colour' from Y'PbPr coordinates.
-y'PbPr :: (Floating a, RealFrac a)  => a -> a -> a -> Colour a
+y'PbPr :: (Ord a, Floating a)  => a -> a -> a -> Colour a
 y'PbPr = L.y'PbPr lumaCoef
 
 -- |Returns the Y'PbPr coordinates of a 'Colour'.
-toY'PbPr :: (Floating a, RealFrac a)  => Colour a -> (a, a, a)
+toY'PbPr :: (Ord a, Floating a)  => Colour a -> (a, a, a)
 toY'PbPr = L.toY'PbPr lumaCoef
 
 -- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.

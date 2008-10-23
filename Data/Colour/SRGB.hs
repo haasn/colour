@@ -115,7 +115,7 @@ sRGB24show :: (RealFrac b, Floating b) => Colour b -> String
 sRGB24show x = sRGB24shows x ""
 
 -- |Read a colour in hexadecimal form, e.g. \"#00aaff\" or \"00aaff\"
-sRGB24reads :: (RealFrac b, Floating b) => ReadS (Colour b)
+sRGB24reads :: (Ord b, Floating b) => ReadS (Colour b)
 sRGB24reads "" = []
 sRGB24reads x =
   [(sRGB24 a b c, c0)
@@ -130,7 +130,7 @@ sRGB24reads x =
     (a0,a1) = splitAt 2 a
 
 -- |Read a colour in hexadecimal form, e.g. \"#00aaff\" or \"00aaff\"
-sRGB24read :: (RealFrac b, Floating b) => String -> (Colour b)
+sRGB24read :: (Ord b, Floating b) => String -> (Colour b)
 sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
   error "Data.Colour.SRGB.sRGB24read: no parse"
              | otherwise = fst (head rx)
