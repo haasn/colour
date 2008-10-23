@@ -53,10 +53,11 @@ colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
 instance (Show a) => Show (Colour a) where
-  showsPrec _ c = ("(rgb709 "++) . (shows r) . (" "++)
-                                 . (shows g) . (" "++)
-                                 . (shows b) . (")"++)
+  showsPrec d c = showParen (d > app_prec) showStr
    where
+    showStr = showString "rgb709 " . (showsPrec (app_prec+1) r)
+            . showString " "       . (showsPrec (app_prec+1) g)
+            . showString " "       . (showsPrec (app_prec+1) b)
     (r,g,b) = toRGB709 c
 
 data Alpha = Alpha
@@ -67,9 +68,12 @@ data Alpha = Alpha
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
 
 instance (Fractional a) => Show (AlphaColour a) where
-  showsPrec _ ac | a == 0 = ("transparent"++)
-                 | otherwise = shows c . (" `withOpacity` "++) . shows a
+  showsPrec d ac = showParen (d > infix_prec) showStr
    where
+    showStr | a == 0 = showString "transparent"
+            | otherwise = showsPrec (infix_prec+1) c
+                        . showString " `withOpacity` "
+                        . showsPrec (infix_prec+1) a
     a = alphaChannel ac
     c = colourChannel ac
 
@@ -200,3 +204,7 @@ rgbAdd (RGB r1 g1 b1) (RGB r2 g2 b2) =
 
 rgbaAdd (RGBA c1 a1) (RGBA c2 a2) =
   RGBA (c1 `rgbAdd` c2) (a1 `Chan.add` a2)
+
+app_prec = 10
+
+infix_prec = 9
