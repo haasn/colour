@@ -39,12 +39,12 @@ data Colour a = RGB !(Chan Red a) !(Chan Green a) !(Chan Blue a) deriving (Eq)
 
 -- |Constructs a 'Colour' from RGB values using the /linear/ RGB colour
 -- space specified in Rec.709.
-rgb709 :: a -> a -> a -> Colour a
+rgb709 :: (Fractional a) => a -> a -> a -> Colour a
 rgb709 r g b = RGB (Chan r) (Chan g) (Chan b)
 
 -- |Return RGB values using the /linear/ RGB colour space specified in
 -- Rec.709.
-toRGB709 :: Colour a -> (a,a,a)
+toRGB709 :: (Fractional a) => Colour a -> (a,a,a)
 toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = (r,g,b)
 
 -- |Change the type used to represent the colour coordinates.
@@ -52,7 +52,7 @@ colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
-instance (Show a) => Show (Colour a) where
+instance (Fractional a) => Show (Colour a) where
   showsPrec d c = showParen (d > app_prec) showStr
    where
     showStr = showString "rgb709 " . (showsPrec (app_prec+1) r)
@@ -60,7 +60,7 @@ instance (Show a) => Show (Colour a) where
             . showString " "       . (showsPrec (app_prec+1) b)
     (r,g,b) = toRGB709 c
 
-instance (Read a) => Read (Colour a) where
+instance (Fractional a, Read a) => Read (Colour a) where
   readsPrec d r = readParen (d > app_prec)
                   (\r -> [(rgb709 r g b,t)
                          |("rgb709",s) <- lex r
@@ -85,7 +85,7 @@ instance (Fractional a) => Show (AlphaColour a) where
     a = alphaChannel ac
     c = colourChannel ac
 
-instance (Num a, Read a) => Read (AlphaColour a) where
+instance (Fractional a, Read a) => Read (AlphaColour a) where
   readsPrec d r = [(transparent,s)|("transparent",s) <- lex r]
                ++ readParen (d > infix_prec)
                   (\r -> [(c `withOpacity` o,s)
