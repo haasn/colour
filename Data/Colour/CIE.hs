@@ -64,8 +64,8 @@ luminance c = y
 -- |Returns the lightness of a colour, which is a perceptually uniform
 -- measure.
 lightness :: (Ord a, Floating a) => Colour a -> a
-lightness c | 0.008856 < y = 116*y**(1/3) - 16
-            | otherwise = 903.3*y
+lightness c | (6/29)^3 < y = 116*y**(1/3) - 16
+            | otherwise = (29/3)^3*y
  where
   y = luminance c
 
