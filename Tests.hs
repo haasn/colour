@@ -135,6 +135,12 @@ prop_blendFlip :: Rational -> RColour -> RColour -> Bool
 prop_blendFlip o c1 c2 = 
   blend (1-o) c2 c1 == blend o c1 c2
 
+prop_showReadC :: RColour -> Bool
+prop_showReadC c = read (show c) == c
+
+prop_showReadAC :: RAlphaColour -> Bool
+prop_showReadAC c = read (show c) == c
+
 prop_sRGB24showlength :: DColour -> Bool
 prop_sRGB24showlength c = length (sRGB24show c) == 7
 
@@ -162,6 +168,8 @@ tests = [("RGB709-to-from", test prop_toFromRGB709)
         ,("blend-over", test prop_blendOver)
         ,("blend-transparent", test prop_blendTransparent)
         ,("blend-flip", test prop_blendFlip)
+        ,("colour-show-read", test prop_showReadC)
+        ,("alphaColour-show-read", test prop_showReadAC)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("luminance-white", check defaultConfig{configMaxTest = 1}

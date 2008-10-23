@@ -60,6 +60,14 @@ instance (Show a) => Show (Colour a) where
             . showString " "       . (showsPrec (app_prec+1) b)
     (r,g,b) = toRGB709 c
 
+instance (Read a) => Read (Colour a) where
+  readsPrec d r = readParen (d > app_prec)
+                  (\r -> [(rgb709 r g b,t)
+                         |("rgb709",s) <- lex r
+                         ,(r,s0) <- readsPrec (app_prec+1) s
+                         ,(g,s1) <- readsPrec (app_prec+1) s0
+                         ,(b,t)  <- readsPrec (app_prec+1) s1]) r
+
 data Alpha = Alpha
 
 -- |This type represents a 'Colour' that may be semi-transparent.
@@ -76,6 +84,16 @@ instance (Fractional a) => Show (AlphaColour a) where
                         . showsPrec (infix_prec+1) a
     a = alphaChannel ac
     c = colourChannel ac
+
+instance (Num a, Read a) => Read (AlphaColour a) where
+  readsPrec d r = [(transparent,s)|("transparent",s) <- lex r]
+               ++ readParen (d > infix_prec)
+                  (\r -> [(c `withOpacity` o,s)
+                         |(c,r0) <- readsPrec (infix_prec+1) r
+                         ,("`",r1) <- lex r0
+                         ,("withOpacity",r2) <- lex r1
+                         ,("`",r3) <- lex r2
+                         ,(o,s)  <- readsPrec (infix_prec+1) r3]) r
 
 -- |This 'AlphaColour' is entirely transparent and has no associated
 -- 'colourChannel'.
