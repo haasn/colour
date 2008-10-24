@@ -29,7 +29,6 @@ import Data.Word
 
 type LumaCoef = (Rational, Rational, Rational)
 
-{- rec 709 luma -}
 luma :: (Ord a, Floating a) => LumaCoef -> Colour a -> a
 luma (lr, lg, lb) c =
   transformBy [fromRational lr, fromRational lg, fromRational lb]

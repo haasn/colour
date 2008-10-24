@@ -42,7 +42,7 @@ import Data.Word
 import Data.Colour.Internal
 import qualified Data.Colour.Luma as L
 
-{- rec 601 luma -}
+{- rec 709 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Ord a, Floating a) => Colour a -> a
 luma = L.luma lumaCoef
