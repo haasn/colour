@@ -147,6 +147,16 @@ prop_blendFlip :: Rational -> RColour -> RColour -> Bool
 prop_blendFlip o c1 c2 = 
   blend (1-o) c2 c1 == blend o c1 c2
 
+prop_darkenBlend :: Rational -> RColour -> Bool
+prop_darkenBlend w c = 
+  blend w c black == darken w c
+
+prop_darkenBlack :: RAlphaColour -> Bool
+prop_darkenBlack c = darken 0 c == black `withOpacity` (alphaChannel c)
+
+prop_darkenId :: RAlphaColour -> Bool
+prop_darkenId c = darken 1 c == c
+
 prop_showReadC :: RColour -> Bool
 prop_showReadC c = read (show c) == c
 
@@ -181,6 +191,9 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("blend-over", test prop_blendOver)
         ,("blend-transparent", test prop_blendTransparent)
         ,("blend-flip", test prop_blendFlip)
+        ,("darken-blend", test prop_darkenBlend)
+        ,("darken-black", test prop_darkenBlack)
+        ,("darken-id", test prop_darkenId)
         ,("colour-show-read", test prop_showReadC)
         ,("alphaColour-show-read", test prop_showReadAC)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
