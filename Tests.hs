@@ -180,6 +180,9 @@ prop_darkenBlack c = darken 0 c == mempty `withOpacity` (alphaChannel c)
 prop_darkenId :: RAlphaColour -> Bool
 prop_darkenId c = darken 1 c == c
 
+prop_atopOpaque :: RAlphaColour -> RColour -> Bool
+prop_atopOpaque c0 c1 = c0 `atop` (opaque c1) == opaque (c0 `over` c1)
+
 prop_showReadC :: RColour -> Bool
 prop_showReadC c = read (show c) == c
 
@@ -226,6 +229,7 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("darken-blend", test prop_darkenBlend)
         ,("darken-black", test prop_darkenBlack)
         ,("darken-id", test prop_darkenId)
+        ,("atop-opaque", test prop_atopOpaque)
         ,("colour-show-read", test prop_showReadC)
         ,("alphaColour-show-read", test prop_showReadAC)
         ,("sRGB24-show-length", test prop_sRGB24showlength)

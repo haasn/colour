@@ -48,6 +48,7 @@ module Data.Colour
  ,AffineSpace(..), blend
 
  ,ColourOps(..)
+ ,atop
  )
 where
 

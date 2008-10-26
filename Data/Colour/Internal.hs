@@ -193,6 +193,10 @@ instance (Num a) => Monoid (AlphaColour a) where
   mempty = transparent
   mappend = over
 
+atop :: (Fractional a) => AlphaColour a -> AlphaColour a -> AlphaColour a
+atop (RGBA c0 (Chan a0)) (RGBA c1 (Chan a1)) = 
+  RGBA (darken a1 c0 `mappend` darken (1-a0) c1) (Chan a1)
+
 -- |'round's and then clamps @x@ between 0 and 'maxBound'.
 quantize :: (RealFrac a1, Integral a, Bounded a) => a1 -> a
 quantize x | x <= fromIntegral l = l
