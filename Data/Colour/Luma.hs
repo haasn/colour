@@ -23,46 +23,50 @@ THE SOFTWARE.
 module Data.Colour.Luma where
 {- For internal use only:
    Not to be exported from the package -}
-import Data.Colour.SRGB
 import Data.Colour.Internal
 import Data.Word
 
 type LumaCoef = (Rational, Rational, Rational)
 
-luma :: (Ord a, Floating a) => LumaCoef -> Colour a -> a
-luma (lr, lg, lb) c =
+luma :: (Ord a, Floating a) => LumaCoef -> (Colour a -> (a, a, a))
+                                        -> Colour a -> a
+luma (lr, lg, lb) toRGB c =
   transformBy [fromRational lr, fromRational lg, fromRational lb]
  where
-  (r',g',b') = toSRGB c
+  (r',g',b') = toRGB c
   transformBy l = sum $ zipWith (*) l [r',g',b']
 
-y'PbPr :: (Ord a, Floating a) => LumaCoef -> a -> a -> a -> Colour a
-y'PbPr (lr, lg, lb) y' pb pr = sRGB r' g' b'
+y'PbPr :: (Ord a, Floating a) => LumaCoef -> (a -> a -> a -> Colour a) 
+                                          -> a -> a -> a -> Colour a
+y'PbPr (lr, lg, lb) rgb y' pb pr = rgb r' g' b'
  where
   r' = y' + fromRational ((lg + lb)/0.5)*pr
   g' = (y' - fromRational lr*r' - fromRational lb*b')/fromRational lg
   b' = y' + fromRational ((lg + lr)/0.5)*pb
 
-toY'PbPr :: (Ord a, Floating a) => LumaCoef -> Colour a -> (a, a, a)
-toY'PbPr l@(lr, lg, lb) c = (y', pb, pr)
+toY'PbPr :: (Ord a, Floating a) => LumaCoef -> (Colour a -> (a, a, a))
+                                            -> Colour a -> (a, a, a)
+toY'PbPr l@(lr, lg, lb) toRGB c = (y', pb, pr)
  where
-  y' = luma l c
-  (r', g', b') = toSRGB c
+  y' = luma l toRGB c
+  (r', g', b') = toRGB c
   pb = fromRational (0.5/(lg + lr))*(b' - y')
   pr = fromRational (0.5/(lg + lb))*(r' - y')
 
 y'CbCr :: (Floating a, RealFrac a) =>
-          LumaCoef -> Word8 -> Word8 -> Word8 -> Colour a
-y'CbCr l y' cb cr = y'PbPr l y'0 pb pr
+          LumaCoef -> (a -> a -> a -> Colour a) 
+                   -> Word8 -> Word8 -> Word8 -> Colour a
+y'CbCr l rgb y' cb cr = y'PbPr l rgb y'0 pb pr
  where
   y'0 = ((fromIntegral y') - 16)/219
   pb  = ((fromIntegral cb) - 128)/224
   pr  = ((fromIntegral cr) - 128)/224
 
 toY'CbCr :: (Floating a, RealFrac a) =>
-            LumaCoef -> Colour a -> (Word8, Word8, Word8)
-toY'CbCr l c = (quantize $ 16 + 219*y'
-             ,quantize $ 128 + 224*pb
-             ,quantize $ 128 + 224*pr)
+            LumaCoef -> (Colour a -> (a, a, a))
+                     -> Colour a -> (Word8, Word8, Word8)
+toY'CbCr l toRGB c = (quantize $ 16 + 219*y'
+                     ,quantize $ 128 + 224*pb
+                     ,quantize $ 128 + 224*pr)
  where
-  (y', pb, pr) = toY'PbPr l c
+  (y', pb, pr) = toY'PbPr l toRGB c

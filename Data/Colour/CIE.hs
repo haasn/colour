@@ -24,12 +24,17 @@ THE SOFTWARE.
 -- Illumination (CIE).
 module Data.Colour.CIE
  (cieXYZ, toCIEXYZ, luminance
+
+ ,Chromaticity
+ ,cieChroma, chroma_coords, chromaColour
+
  ,lightness, cieLab, cieLuv
  )
 where
 
+import Data.List
 import Data.Colour.Internal
-import Data.Colour.Names
+import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix
 
 -- |Construct a 'Colour' from XYZ coordinates for the 2° standard
@@ -37,7 +42,8 @@ import Data.Colour.Matrix
 cieXYZ :: (Fractional a) => a -> a -> a -> Colour a
 cieXYZ x y z = rgb709 r g b
  where
-  [r,g,b] = mult (map (map fromRational) xyz2rgb) [x,y,z]
+  [r,g,b] = mult matrix [x,y,z]
+  matrix = map (map fromRational) xyz2rgb709
 
 -- |Return the XYZ colour coordinates for the 2° standard
 -- (colourimetric) observer.
@@ -45,13 +51,12 @@ toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
 toCIEXYZ c = (x,y,z)
  where
   (r,g,b) = toRGB709 c
-  [x,y,z] = mult (map (map fromRational) rgb2xyz) [r,g,b]
+  [x,y,z] = mult matrix [r,g,b]
+  matrix = map (map fromRational) rgb7092xyz
 
-rgb2xyz = [[0.412453, 0.357580, 0.180423]
-          ,[0.212671, 0.715160, 0.072169]
-          ,[0.019334, 0.119193, 0.950227]]
+rgb7092xyz = (rgb2xyz rgb709Space)
 
-xyz2rgb = inverse rgb2xyz
+xyz2rgb709 = inverse rgb7092xyz
 
 {- CIE luminance -}
 -- |Returns the Y colour coordinate (luminance) for the 2° standard
@@ -60,6 +65,21 @@ luminance :: (Fractional a) => Colour a -> a
 luminance c = y
  where
   (x,y,z) = toCIEXYZ c
+
+instance AffineSpace Chromaticity where
+ affineCombo l z =
+   foldl1' chromaAdd [chromaScale w a | (w,a) <- (1-total,z):l]
+  where
+   total = sum $ map fst l
+   (Chroma x0 y0) `chromaAdd` (Chroma x1 y1) = Chroma (x0+x1) (y0+y1)
+   s `chromaScale` (Chroma x y) = Chroma (s*x) (s*y)
+
+-- |Constructs a colour from the given 'Chromaticity' and 'luminance'.
+chromaColour :: (Fractional a) => Chromaticity a -> a -> Colour a
+chromaColour ch y = cieXYZ (s*ch_x) y (s*ch_z)
+ where
+  (ch_x, ch_y, ch_z) = chroma_coords ch
+  s = y/ch_y
 
 -- |Returns the lightness of a colour, which is a perceptually uniform
 -- measure.
@@ -71,9 +91,13 @@ lightness c | (6/29)^3 < y = 116*y**(1/3) - 16
 
 -- |Returns the CIELAB coordinates of a colour, which is a
 -- perceptually uniform colour space.
-cieLab :: (Ord a, Floating a) => Colour a -> (a,a,a)
-cieLab c = (lightness c, a, b)
+-- If you don't know what white point to use, use
+-- 'Data.Colour.CIE.Illuminant.d65'.
+cieLab :: (Ord a, Floating a) => Chromaticity a -- ^White point
+                              -> Colour a -> (a,a,a)
+cieLab white_ch c = (lightness c, a, b)
  where
+  white = chromaColour white_ch 1.0
   (x,y,z) = toCIEXYZ c
   (xn,yn,zn) = toCIEXYZ white
   a = 500*((x/xn)**(1/3) - (y/yn)**(1/3))
@@ -81,9 +105,13 @@ cieLab c = (lightness c, a, b)
 
 -- |Returns the CIELUV coordinates of a colour, which is a
 -- perceptually uniform colour space.
-cieLuv :: (Ord a, Floating a) => Colour a -> (a,a,a)
-cieLuv c = (l, 13*l*(u'-un'), 13*l*(v'-vn'))
+-- If you don't know what white point to use, use
+-- 'Data.Colour.CIE.Illuminant.d65'.
+cieLuv :: (Ord a, Floating a) => Chromaticity a -- ^White point
+                              -> Colour a -> (a,a,a)
+cieLuv white_ch c = (l, 13*l*(u'-un'), 13*l*(v'-vn'))
  where
+  white = chromaColour white_ch 1.0
   (u', v') = u'v' c
   (un', vn') = u'v' white
   l = lightness c

@@ -23,6 +23,8 @@ THE SOFTWARE.
 module Data.Colour.Internal where
 
 import Data.List
+import Data.Colour.CIE.Chromaticity
+import Data.Colour.CIE.Illuminant
 import qualified Data.Colour.Chan as Chan
 import Data.Colour.Chan (Chan(Chan))
 import Data.Monoid
@@ -208,6 +210,12 @@ colourChannel (RGBA (RGB r g b) (Chan a)) =
 
  where
   a' = recip a
+
+rgb709Space :: Fractional a => RGBSpace a
+rgb709Space = RGBSpace (cieChroma 0.64 0.33)
+                       (cieChroma 0.30 0.60)
+                       (cieChroma 0.15 0.06)
+                       d65
 
 --------------------------------------------------------------------------
 -- not for export

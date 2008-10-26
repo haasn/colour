@@ -28,6 +28,7 @@ import Control.Monad
 import Test.QuickCheck
 import Text.Printf
 
+import Data.Colour.Matrix
 import Data.Colour
 import Data.Colour.SRGB
 import Data.Colour.CIE
@@ -72,6 +73,15 @@ instance (Real a, Fractional a, Arbitrary a) =>
     a = alphaChannel ac
     c = colourChannel ac
 
+prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
+                (a2,b2,c2) (d2,e2,f2) (g2,h2,i2)
+                (x,y,z) = mult m1 (mult m2 v) == mult (matrixMult m1 m2) v
+ where 
+  m1 = [[a1,b1,c1],[d1,e1,f1],[g1,h1,i1]]
+  m2 = [[a2,b2,c2],[d2,e2,f2],[g2,h2,i2]]
+  v :: [Rational]
+  v = [x,y,z]
+
 prop_toFromRGB709 :: RColour -> Bool
 prop_toFromRGB709 c = (rgb709 r g b) == c
  where
@@ -101,9 +111,11 @@ prop_fromToY'CbCr709 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr709 y' cb cr =
   HDTV.toY'CbCr (HDTV.y'CbCr y' cb cr) == (y',cb,cr)
 
+{-
 prop_fromToY'CbCr601 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr601 y' cb cr =
   SDTV.toY'CbCr (SDTV.y'CbCr y' cb cr) == (y',cb,cr)
+-}
 
 prop_fadeId :: RAlphaColour -> Bool
 prop_fadeId c = fade 1 c == c
@@ -151,14 +163,15 @@ prop_readshowSRGB24 c =
 prop_luminance_white :: Bool
 prop_luminance_white = luminance white == 1
 
-tests = [("RGB709-to-from", test prop_toFromRGB709)
+tests = [("matrix-mult", test prop_matrixMult)
+        ,("RGB709-to-from", test prop_toFromRGB709)
         ,("RGB709-from-to", test prop_fromToRGB709)
         ,("XYZ-to-from", test prop_toFromXYZ)
         ,("XYZ-from-to", test prop_fromToXYZ)
         ,("sRGB-to-from", test prop_toFromSRGB)
         ,("sRGB-from-to", test prop_fromToSRGB)
         ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
-        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr709)
+--        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
         ,("fade-id", test prop_fadeId)
         ,("fade-transparent", test prop_fadeTransparent)
         ,("transparent-over", test prop_transparentOver)

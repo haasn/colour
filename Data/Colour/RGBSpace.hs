@@ -20,19 +20,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
-module Data.Colour.Matrix where
+-- |An RGB space is characterised by chromaticities for red, green, and
+-- blue, and the chromaticity of the white point.
+module Data.Colour.RGBSpace
+ (RGBSpace(..)
+ ,rgbSpace
+ ,toRGBSpace
+ )
+where
 
-import Data.List
+import Data.Colour.CIE.Chromaticity
+import Data.Colour.Internal
+import Data.Colour.Matrix
 
-default (Rational)
-
-inverse [[a,b,c],[d,e,f],[g,h,i]] =
-  [[(e*i-f*h)/det, -(b*i-c*h)/det, (b*f-c*e)/det]
-  ,[-(d*i-f*g)/det, (a*i-c*g)/det, -(a*f-c*d)/det]
-  ,[(d*h-e*g)/det, -(a*h-b*g)/det, (a*e-b*d)/det]]
+rgbSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
+rgbSpace space r g b = rgb709 r0 g0 b0
  where
-  det = a*(e*i-f*h) - b*(d*i-f*g) + c*(d*h-e*g)
+  matrix = matrixMult (xyz2rgb rgb709Space) (rgb2xyz space)
+  [r0,g0,b0] = mult matrix [r,g,b]
 
-mult l x = map (sum . (zipWith (*) x)) l
+toRGBSpace :: (Fractional a) => RGBSpace a -> Colour a -> (a,a,a)
+toRGBSpace space c = (r,g,b)
+ where
+  (r0,g0,b0) = toRGB709 c
+  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgb709Space)
+  [r,g,b] = mult matrix [r0,g0,b0]
 
-matrixMult l m = transpose (map (mult l) (transpose m))

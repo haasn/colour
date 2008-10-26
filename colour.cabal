@@ -20,6 +20,8 @@ Library
   Exposed-Modules:   Data.Colour
                      Data.Colour.SRGB
                      Data.Colour.CIE
+                     Data.Colour.CIE.Illuminant
+                     Data.Colour.RGBSpace
                      Data.Colour.Names
                      Data.Colour.SDTV
                      Data.Colour.HDTV
@@ -27,3 +29,4 @@ Library
                      Data.Colour.Chan
                      Data.Colour.Luma
                      Data.Colour.Matrix
+                     Data.Colour.CIE.Chromaticity
