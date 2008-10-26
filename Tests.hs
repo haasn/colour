@@ -68,11 +68,10 @@ instance (Real a, Fractional a, Arbitrary a) =>
     mkAlphaColour :: (Fractional a) => Colour a -> Word8 -> AlphaColour a
     mkAlphaColour c a =
       c `withOpacity` (fromIntegral a/fromIntegral (maxBound `asTypeOf` a))
-  coarbitrary ac | a == 0 = coarbitrary a
-                 | otherwise = coarbitrary a . coarbitrary c
+  coarbitrary ac = coarbitrary a . coarbitrary c
    where
     a = alphaChannel ac
-    c = colourChannel ac
+    c = ac `over` black
 
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (Chromaticity a) where

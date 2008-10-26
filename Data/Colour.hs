@@ -44,7 +44,7 @@ module Data.Colour
  ,opaque, disolve, withOpacity
  ,transparent
  ,alphaColourConvert
- ,alphaChannel, colourChannel
+ ,alphaChannel
 
  ,AffineSpace(..), blend
 

@@ -196,20 +196,16 @@ quantize x | x <= fromIntegral l = l
 
 {- Avoid using -}
 -- |Returns the opacity of an 'AlphaColour'.
--- This function is provided only for converting to other datatypes.
--- Its use is discouraged.
--- Instead compose the 'AlphaColour' with another 'Colour' and extract
--- the resulting 'Colour' components.
 alphaChannel :: AlphaColour a -> a
 alphaChannel (RGBA _ (Chan a)) = a
 
 -- |Returns the colour of an 'AlphaColour'.
 -- @colourChannel transparent@ is undefined and may result in @nan@ or an
 -- error.
--- This function is provided only for converting to other datatypes.
 -- Its use is discouraged.
--- Instead compose the 'AlphaColour' with another 'Colour' and extract the
--- resulting 'Colour' components.
+-- If you are desparate, use
+--
+-- >darken (recip (alphaChannel c)) (c `over` black)
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a
 colourChannel (RGBA (RGB r g b) (Chan a)) =
   RGB (Chan.scale a' r)
