@@ -49,9 +49,6 @@ rgb709 r g b = RGB (Chan r) (Chan g) (Chan b)
 toRGB709 :: (Fractional a) => Colour a -> (a,a,a)
 toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = (r,g,b)
 
-black :: (Fractional a) => Colour a
-black = rgb709 0 0 0
-
 -- |Change the type used to represent the colour coordinates.
 colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =

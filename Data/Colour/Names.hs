@@ -50,7 +50,8 @@ beige = sRGB24 245 245 220
 bisque :: (Ord a, Floating a) => Colour a
 bisque = sRGB24 255 228 196
 
--- black is defined in Data.Colour
+black :: (Ord a, Floating a) => Colour a
+black = sRGB24 0 0 0
 
 blanchedalmond :: (Ord a, Floating a) => Colour a
 blanchedalmond = sRGB24 255 235 205
