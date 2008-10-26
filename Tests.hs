@@ -35,6 +35,7 @@ import Data.Colour.CIE
 import Data.Colour.Names
 import Data.Colour.HDTV as HDTV
 import qualified Data.Colour.SDTV as SDTV
+import Data.Colour.RGBSpace
 
 default (Rational, Double, Float)
 
@@ -68,10 +69,31 @@ instance (Real a, Fractional a, Arbitrary a) =>
     mkAlphaColour c a =
       c `withOpacity` (fromIntegral a/fromIntegral (maxBound `asTypeOf` a))
   coarbitrary ac | a == 0 = coarbitrary a
-                | otherwise = coarbitrary a . coarbitrary c
+                 | otherwise = coarbitrary a . coarbitrary c
    where
     a = alphaChannel ac
     c = colourChannel ac
+
+instance (Fractional a, Arbitrary a) =>
+         Arbitrary (Chromaticity a) where
+  arbitrary = liftM2 cieChroma arbitrary arbitrary
+  coarbitrary c = coarbitrary x . coarbitrary y
+   where
+    (x,y,_) = chroma_coords c
+
+instance (Fractional a, Arbitrary a) =>
+         Arbitrary (RGBSpace a) where
+  arbitrary = liftM4 RGBSpace arbitrary arbitrary arbitrary arbitrary
+  coarbitrary (RGBSpace a b c d) = coarbitrary a . coarbitrary b 
+                                 . coarbitrary c . coarbitrary d
+
+good (RGBSpace r g b w) = p1 && p2
+ where
+  chroma_list a = [x,y,z]
+   where
+    (x,y,z) = chroma_coords a
+  p1 = 0 /= determinant (map chroma_list [r,g,b])
+  p2 = 0 /= let (x,y,z) = chroma_coords w in y
 
 prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
                 (a2,b2,c2) (d2,e2,f2) (g2,h2,i2)
@@ -170,8 +192,17 @@ prop_readshowSRGB24 :: DColour -> Bool
 prop_readshowSRGB24 c =
   sRGB24show (sRGB24read (sRGB24show c)) == sRGB24show c
 
-prop_luminance_white :: Bool
-prop_luminance_white = luminance white == 1
+prop_luminance_white :: RGBSpace Rational -> Property
+prop_luminance_white space =
+  good space ==> luminance (rgbSpace space 1 1 1) == 1
+
+prop_rgb709 :: Rational -> Rational -> Rational -> Bool
+prop_rgb709 r g b =
+  rgbSpace rgb709Space r g b == rgb709 r g b
+
+prop_toRGB709 :: RColour -> Bool
+prop_toRGB709 c =
+  toRGBSpace rgb709Space c == toRGB709 c
 
 tests = [("matrix-mult", test prop_matrixMult)
         ,("RGB709-to-from", test prop_toFromRGB709)
@@ -198,8 +229,9 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("alphaColour-show-read", test prop_showReadAC)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
-        ,("luminance-white", check defaultConfig{configMaxTest = 1}
-                             prop_luminance_white)
+        ,("luminance-white", test prop_luminance_white)
+        ,("rgb709", test prop_rgb709)
+        ,("toRGB709", test prop_toRGB709)
         ]
 
 main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) tests
