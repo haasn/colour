@@ -27,6 +27,7 @@ import Data.Word
 import Control.Monad
 import Test.QuickCheck
 import Text.Printf
+import Data.Monoid
 
 import Data.Colour.Matrix
 import Data.Colour
@@ -71,7 +72,8 @@ instance (Real a, Fractional a, Arbitrary a) =>
   coarbitrary ac = coarbitrary a . coarbitrary c
    where
     a = alphaChannel ac
-    c = ac `over` black
+    c = ac `over` mempty
+    d = opaque c `asTypeOf` ac -- to help the type sytem
 
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (Chromaticity a) where
@@ -170,10 +172,10 @@ prop_blendFlip o c1 c2 =
 
 prop_darkenBlend :: Rational -> RColour -> Bool
 prop_darkenBlend w c = 
-  blend w c black == darken w c
+  blend w c mempty == darken w c
 
 prop_darkenBlack :: RAlphaColour -> Bool
-prop_darkenBlack c = darken 0 c == black `withOpacity` (alphaChannel c)
+prop_darkenBlack c = darken 0 c == mempty `withOpacity` (alphaChannel c)
 
 prop_darkenId :: RAlphaColour -> Bool
 prop_darkenId c = darken 1 c == c

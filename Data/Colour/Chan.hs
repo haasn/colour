@@ -23,6 +23,9 @@ THE SOFTWARE.
 module Data.Colour.Chan where
 {- For internal use only:
    Not to be exported from the package -}
+
+import qualified Data.List
+
 newtype Chan p a = Chan a deriving (Eq)
 
 empty :: (Num a) => Chan p a
@@ -44,3 +47,6 @@ over c0 a c1 = c0 `add` scale (1-a) c1
 
 convert :: (Fractional b, Real a) => Chan p a -> Chan p b
 convert (Chan x) = Chan (realToFrac x)
+
+sum :: (Num a) => [Chan p a] -> Chan p a
+sum l = Chan (Data.List.sum [x |Chan x <- l])

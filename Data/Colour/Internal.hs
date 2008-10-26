@@ -70,6 +70,15 @@ instance (Fractional a, Read a) => Read (Colour a) where
                          ,(g0,s1) <- readsPrec (app_prec+1) s0
                          ,(b0,t)  <- readsPrec (app_prec+1) s1]) r
 
+instance (Num a) => Monoid (Colour a) where
+  mempty = RGB Chan.empty Chan.empty Chan.empty
+  (RGB r1 g1 b1) `mappend` (RGB r2 g2 b2) =
+    RGB (r1 `Chan.add` r2) (g1 `Chan.add` g2) (b1 `Chan.add` b2)
+  mconcat l = RGB (Chan.sum lr) (Chan.sum lg) (Chan.sum lb)
+   where
+    (lr,lg,lb) = unzip3 (map toRGB l)
+    toRGB (RGB r g b) = (r,g,b)
+
 data Alpha = Alpha
 
 -- |This type represents a 'Colour' that may be semi-transparent.
