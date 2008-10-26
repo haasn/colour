@@ -47,7 +47,7 @@ module Data.Colour
 
  ,AffineSpace(..), blend
 
- ,Composite(..)
+ ,ColourOps(..)
  )
 where
 

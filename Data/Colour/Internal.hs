@@ -156,7 +156,7 @@ instance AffineSpace AlphaColour where
 -- composite
 --------------------------------------------------------------------------
 
-class Composite f where
+class ColourOps f where
  -- |@c1 \`over\` c2@ returns the 'Colour' created by compositing the
  -- 'AlphaColour' @c1@ over @c2@, which may be either a 'Colour' or
  -- 'AlphaColour'.
@@ -165,14 +165,14 @@ class Composite f where
  -- For 'Colour', darken s c = blend s c black
  darken :: (Num a) => a -> f a -> f a
 
-instance Composite Colour where
+instance ColourOps Colour where
  (RGBA (RGB r0 g0 b0) (Chan a0)) `over` (RGB r1 g1 b1) =
    RGB (Chan.over r0 a0 r1)
        (Chan.over g0 a0 g1)
        (Chan.over b0 a0 b1)
  darken = scale
 
-instance Composite AlphaColour where
+instance ColourOps AlphaColour where
  c0@(RGBA _ a0@(Chan a0')) `over` (RGBA c1 a1) =
    RGBA (c0 `over` c1) (Chan.over a0 a0' a1)
  darken s (RGBA c a) = RGBA (darken s c) a
