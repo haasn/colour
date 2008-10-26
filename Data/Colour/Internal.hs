@@ -122,13 +122,13 @@ opaque c = RGBA c Chan.full
 
 -- |Returns a 'AlphaColour' more transparent by a factor of @o@.
 disolve :: (Num a) => a -> AlphaColour a -> AlphaColour a
-disolve o (RGBA c a) = RGBA (scale o c) (Chan.scale o a)
+disolve o (RGBA c a) = RGBA (darken o c) (Chan.scale o a)
 
 -- |Creates an 'AlphaColour' from a 'Colour' with a given opacity.
 --
 -- >c `withOpacity` o == disolve o (opaque c) 
 withOpacity :: (Num a) => Colour a -> a -> AlphaColour a
-c `withOpacity` o = RGBA (scale o c) (Chan o)
+c `withOpacity` o = RGBA (darken o c) (Chan o)
 
 --------------------------------------------------------------------------
 -- Blending
@@ -151,7 +151,7 @@ blend weight c1 c2 = affineCombo [(weight,c1)] c2
 
 instance AffineSpace Colour where
  affineCombo l z =
-   foldl1' rgbAdd [scale w a | (w,a) <- (1-total,z):l]
+   foldl1' mappend [darken w a | (w,a) <- (1-total,z):l]
   where
    total = sum $ map fst l
 
@@ -179,7 +179,9 @@ instance ColourOps Colour where
    RGB (Chan.over r0 a0 r1)
        (Chan.over g0 a0 g1)
        (Chan.over b0 a0 b1)
- darken = scale
+ darken s (RGB r g b) = RGB (Chan.scale s r)
+                            (Chan.scale s g)
+                            (Chan.scale s b)
 
 instance ColourOps AlphaColour where
  c0@(RGBA _ a0@(Chan a0')) `over` (RGBA c1 a1) =
@@ -213,13 +215,7 @@ alphaChannel (RGBA _ (Chan a)) = a
 --
 -- >darken (recip (alphaChannel c)) (c `over` black)
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a
-colourChannel (RGBA (RGB r g b) (Chan a)) =
-  RGB (Chan.scale a' r)
-      (Chan.scale a' g)
-      (Chan.scale a' b)
-
- where
-  a' = recip a
+colourChannel (RGBA c (Chan a)) = darken (recip a) c
 
 rgb709Space :: Fractional a => RGBSpace a
 rgb709Space = RGBSpace (cieChroma 0.64 0.33)
@@ -231,12 +227,5 @@ rgb709Space = RGBSpace (cieChroma 0.64 0.33)
 -- not for export
 --------------------------------------------------------------------------
 
-scale s (RGB r g b) = RGB (Chan.scale s r)
-                          (Chan.scale s g)
-                          (Chan.scale s b)
-
-rgbAdd (RGB r1 g1 b1) (RGB r2 g2 b2) =
-  RGB (r1 `Chan.add` r2) (g1 `Chan.add` g2) (b1 `Chan.add` b2)
-
 rgbaAdd (RGBA c1 a1) (RGBA c2 a2) =
-  RGBA (c1 `rgbAdd` c2) (a1 `Chan.add` a2)
+  RGBA (c1 `mappend` c2) (a1 `Chan.add` a2)
