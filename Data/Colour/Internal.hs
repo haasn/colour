@@ -238,7 +238,3 @@ rgbAdd (RGB r1 g1 b1) (RGB r2 g2 b2) =
 
 rgbaAdd (RGBA c1 a1) (RGBA c2 a2) =
   RGBA (c1 `rgbAdd` c2) (a1 `Chan.add` a2)
-
-app_prec = 10
-
-infix_prec = 9

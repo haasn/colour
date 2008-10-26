@@ -36,12 +36,26 @@ chroma_coords (Chroma x y) = (x, y, 1 - x - y)
 cieChroma :: (Fractional a) => a -> a -> Chromaticity a
 cieChroma = Chroma
 
+instance (Fractional a) => Show (Chromaticity a) where
+  showsPrec d c = showParen (d > app_prec) showStr
+   where
+    showStr = showString "cieChroma " . (showsPrec (app_prec+1) x)
+            . showString " "          . (showsPrec (app_prec+1) y)
+    (x,y,z) = chroma_coords c
+
+instance (Fractional a, Read a) => Read (Chromaticity a) where
+  readsPrec d r = readParen (d > app_prec)
+                  (\r -> [(cieChroma x y,t)
+                         |("cieChroma",s) <- lex r
+                         ,(x,s0) <- readsPrec (app_prec+1) s
+                         ,(y,t) <- readsPrec (app_prec+1) s0]) r
+
 -- Should a always be Rational?
 data RGBSpace a = RGBSpace {primaryRed   :: Chromaticity a
                            ,primaryGreen :: Chromaticity a
                            ,primaryBlue  :: Chromaticity a
                            ,whitePoint   :: Chromaticity a
-                           } deriving (Eq)
+                           } deriving (Eq, Read, Show)
 
 {- not for export -}
 rgb2xyz :: (Fractional a) => RGBSpace a -> [[a]]
@@ -60,3 +74,11 @@ rgb2xyz space =[[ar*xr, ag*xg, ab*xb]
 
 xyz2rgb :: (Fractional a) => RGBSpace a -> [[a]]
 xyz2rgb = inverse . rgb2xyz
+
+--------------------------------------------------------------------------
+-- not for export
+--------------------------------------------------------------------------
+
+app_prec = 10
+
+infix_prec = 9 `asTypeOf` app_prec
