@@ -117,11 +117,11 @@ prop_fromToY'CbCr601 y' cb cr =
   SDTV.toY'CbCr (SDTV.y'CbCr y' cb cr) == (y',cb,cr)
 -}
 
-prop_fadeId :: RAlphaColour -> Bool
-prop_fadeId c = fade 1 c == c
+prop_disolveId :: RAlphaColour -> Bool
+prop_disolveId c = disolve 1 c == c
 
-prop_fadeTransparent :: RAlphaColour -> Bool
-prop_fadeTransparent c = fade 0 c == transparent
+prop_disolveTransparent :: RAlphaColour -> Bool
+prop_disolveTransparent c = disolve 0 c == transparent
 
 prop_transparentOver :: RColour -> Bool
 prop_transparentOver c = transparent `over` c == c
@@ -172,8 +172,8 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("sRGB-from-to", test prop_fromToSRGB)
         ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
 --        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
-        ,("fade-id", test prop_fadeId)
-        ,("fade-transparent", test prop_fadeTransparent)
+        ,("disolve-id", test prop_disolveId)
+        ,("disolve-transparent", test prop_disolveTransparent)
         ,("transparent-over", test prop_transparentOver)
         ,("over-transparent", test prop_overTransparent)
         ,("opaque-over", test prop_opaqueOver)
