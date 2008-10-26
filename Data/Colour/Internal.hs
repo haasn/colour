@@ -67,11 +67,11 @@ instance (Fractional a) => Show (Colour a) where
 
 instance (Fractional a, Read a) => Read (Colour a) where
   readsPrec d r = readParen (d > app_prec)
-                  (\r -> [(rgb709 r g b,t)
+                  (\r -> [(rgb709 r0 g0 b0,t)
                          |("rgb709",s) <- lex r
-                         ,(r,s0) <- readsPrec (app_prec+1) s
-                         ,(g,s1) <- readsPrec (app_prec+1) s0
-                         ,(b,t)  <- readsPrec (app_prec+1) s1]) r
+                         ,(r0,s0) <- readsPrec (app_prec+1) s
+                         ,(g0,s1) <- readsPrec (app_prec+1) s0
+                         ,(b0,t)  <- readsPrec (app_prec+1) s1]) r
 
 data Alpha = Alpha
 
