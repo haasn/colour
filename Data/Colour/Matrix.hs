@@ -26,12 +26,14 @@ import Data.List
 
 default (Rational)
 
-inverse [[a,b,c],[d,e,f],[g,h,i]] =
+inverse m@[[a,b,c],[d,e,f],[g,h,i]] =
   [[(e*i-f*h)/det, -(b*i-c*h)/det, (b*f-c*e)/det]
   ,[-(d*i-f*g)/det, (a*i-c*g)/det, -(a*f-c*d)/det]
   ,[(d*h-e*g)/det, -(a*h-b*g)/det, (a*e-b*d)/det]]
  where
-  det = a*(e*i-f*h) - b*(d*i-f*g) + c*(d*h-e*g)
+  det = determinant m
+determinant [[a,b,c],[d,e,f],[g,h,i]] =
+  a*(e*i-f*h) - b*(d*i-f*g) + c*(d*h-e*g)
 
 mult l x = map (sum . (zipWith (*) x)) l
 
