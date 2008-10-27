@@ -32,6 +32,9 @@ data RGB a = RGB {channelRed :: !a
                  ,channelBlue :: !a
                  } deriving (Eq, Show, Read)
 
+instance Functor RGB where
+ fmap f (RGB r g b) = RGB (f r) (f g) (f b)
+
 -- |Uncurries a function expecting three r, g, b parameters.
 uncurryRGB :: (a -> a -> a -> b) -> RGB a -> b
 uncurryRGB f (RGB r g b) = f r g b
@@ -48,14 +51,14 @@ data RGBSpace a = RGBSpace {primaries :: !(RGB (Chromaticity a))
 {- not for export -}
 
 primaryMatrix :: (Fractional a) => (RGB (Chromaticity a)) -> [[a]]
-primaryMatrix (RGB rp gp bp) =
+primaryMatrix p =
   [[xr, xg, xb]
   ,[yr, yg, yb]
   ,[zr, zg, zb]]
  where
-  (xr, yr, zr) = chroma_coords rp
-  (xg, yg, zg) = chroma_coords gp
-  (xb, yb, zb) = chroma_coords bp
+  RGB (xr, yr, zr)
+      (xg, yg, zg)
+      (xb, yb, zb) = fmap chroma_coords p
 
 rgb2xyz :: (Fractional a) => RGBSpace a -> [[a]]
 rgb2xyz space =

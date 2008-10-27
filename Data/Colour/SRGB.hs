@@ -55,20 +55,15 @@ invTransferFunction nonLin | nonLin == 1       = 1
 -- |Construct a colour from an sRGB specification.
 -- Input components are expected to be in the range [0..1].
 sRGB :: (Ord b, Floating b) =>  b -> b -> b -> Colour b
-sRGB r' g' b' = rgb709 r g b
- where
-  r = invTransferFunction r'
-  g = invTransferFunction g'
-  b = invTransferFunction b'
+sRGB = curryRGB (uncurryRGB rgb709 . fmap invTransferFunction)
 
 -- |Construct a colour from an sRGB specification.
 -- Input components are expected to be in the range [0..'maxBound'].
 sRGBBounded :: (Ord b, Floating b, Integral a, Bounded a) =>
                a -> a -> a -> Colour b
-sRGBBounded r' g' b' = sRGB (fromIntegral r'/m)
-                            (fromIntegral g'/m)
-                            (fromIntegral b'/m)
+sRGBBounded r' g' b' = uncurryRGB sRGB (fmap f (RGB r' g' b'))
  where
+  f x' = (fromIntegral x'/m)
   m = fromIntegral $ maxBound `asTypeOf` r'
 
 -- |Construct a colour from a 24-bit (three 8-bit words) sRGB
@@ -78,12 +73,7 @@ sRGB24 = sRGBBounded
 
 -- |Return the sRGB colour components in the range [0..1].
 toSRGB :: (Ord b, Floating b) => Colour b -> RGB b
-toSRGB c = RGB r' g' b'
- where
-  RGB r g b = toRGB709 c
-  r' = transferFunction r
-  g' = transferFunction g
-  b' = transferFunction b
+toSRGB c = fmap transferFunction (toRGB709 c)
 
 {- Results are clamped and quantized -}
 -- |Return the approximate sRGB colour components in the range
@@ -91,11 +81,10 @@ toSRGB c = RGB r' g' b'
 -- Out of range values are clamped.
 toSRGBBounded :: (RealFrac b, Floating b, Integral a, Bounded a) =>
                  Colour b -> RGB a
-toSRGBBounded c = RGB r' g' b'
+toSRGBBounded c = fmap f (toSRGB c)
  where
-  RGB r'0 g'0 b'0 = toSRGB c
-  (r', g', b') = (quantize (m*r'0), quantize (m*g'0), quantize (m*b'0))
-  m = fromIntegral $ maxBound `asTypeOf` r'
+  f x' = quantize (m*x')
+  m = fromIntegral $ maxBound `asTypeOf` (f undefined)
 
 -- |Return the approximate 24-bit sRGB colour components as three 8-bit
 -- components.
