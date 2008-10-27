@@ -51,10 +51,10 @@ instance (Fractional a, Read a) => Read (Chromaticity a) where
                          ,(y,t) <- readsPrec (app_prec+1) s0]) r
 
 -- Should a always be Rational?
-data RGBSpace a = RGBSpace {primaryRed   :: Chromaticity a
-                           ,primaryGreen :: Chromaticity a
-                           ,primaryBlue  :: Chromaticity a
-                           ,whitePoint   :: Chromaticity a
+data RGBSpace a = RGBSpace {primaryRed   :: !(Chromaticity a)
+                           ,primaryGreen :: !(Chromaticity a)
+                           ,primaryBlue  :: !(Chromaticity a)
+                           ,whitePoint   :: !(Chromaticity a)
                            } deriving (Eq, Read, Show)
 
 {- not for export -}
