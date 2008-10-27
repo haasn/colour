@@ -27,6 +27,7 @@ Library
                      Data.Colour.HDTV
   Other-Modules:     Data.Colour.Internal
                      Data.Colour.Chan
+                     Data.Colour.RGB
                      Data.Colour.Luma
                      Data.Colour.Matrix
                      Data.Colour.CIE.Chromaticity

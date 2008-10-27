@@ -23,6 +23,7 @@ THE SOFTWARE.
 module Data.Colour.Internal where
 
 import Data.List
+import qualified Data.Colour.RGB
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.CIE.Illuminant
 import qualified Data.Colour.Chan as Chan
@@ -52,8 +53,8 @@ rgb709 r g b = RGB (Chan r) (Chan g) (Chan b)
 
 -- |Return RGB values using the /linear/ RGB colour space specified in
 -- Rec.709.
-toRGB709 :: (Fractional a) => Colour a -> (a,a,a)
-toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = (r,g,b)
+toRGB709 :: (Fractional a) => Colour a -> Data.Colour.RGB.RGB a
+toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = Data.Colour.RGB.RGB r g b
 
 -- |Change the type used to represent the colour coordinates.
 colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
@@ -66,7 +67,7 @@ instance (Fractional a) => Show (Colour a) where
     showStr = showString "rgb709 " . (showsPrec (app_prec+1) r)
             . showString " "       . (showsPrec (app_prec+1) g)
             . showString " "       . (showsPrec (app_prec+1) b)
-    (r,g,b) = toRGB709 c
+    Data.Colour.RGB.RGB r g b = toRGB709 c
 
 instance (Fractional a, Read a) => Read (Colour a) where
   readsPrec d r = readParen (d > app_prec)

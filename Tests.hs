@@ -60,7 +60,9 @@ instance (Real a, Fractional a, Arbitrary a) => Arbitrary (Colour a) where
   arbitrary = liftM3 mkColour arbitrary arbitrary arbitrary
    where
     mkColour r' g' b' = colourConvert (sRGB24 r' g' b'::Colour Double)
-  coarbitrary = coarbitrary . toRGB709
+  coarbitrary c = coarbitrary (r,g,b)
+   where
+    (RGB r g b) = toRGB709 c
 
 instance (Real a, Fractional a, Arbitrary a) =>
          Arbitrary (AlphaColour a) where
@@ -106,12 +108,10 @@ prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
   v = [x,y,z]
 
 prop_toFromRGB709 :: RColour -> Bool
-prop_toFromRGB709 c = (rgb709 r g b) == c
- where
-  (r,g,b) = toRGB709 c
+prop_toFromRGB709 c = uncurryRGB rgb709 (toRGB709 c) == c
 
 prop_fromToRGB709 :: Rational -> Rational -> Rational -> Bool
-prop_fromToRGB709 r g b = toRGB709 (rgb709 r g b) == (r,g,b)
+prop_fromToRGB709 r g b = toRGB709 (rgb709 r g b) == RGB r g b
 
 prop_toFromXYZ :: RColour -> Bool
 prop_toFromXYZ c = (cieXYZ x y z) == c
@@ -123,12 +123,10 @@ prop_fromToXYZ x y z = toCIEXYZ (cieXYZ x y z) == (x,y,z)
 
 -- Uses the fact that an Arbitrary colour is an sRGB24 colour.
 prop_toFromSRGB :: DColour -> Bool
-prop_toFromSRGB c = (sRGB24 r' g' b') == c
- where
-  (r',g',b') = toSRGB24 c
+prop_toFromSRGB c = uncurryRGB sRGB24 (toSRGB24 c) == c
 
 prop_fromToSRGB :: Word8 -> Word8 -> Word8 -> Bool
-prop_fromToSRGB r' g' b' = toSRGB24 (sRGB24 r' g' b') == (r',g',b')
+prop_fromToSRGB r' g' b' = toSRGB24 (sRGB24 r' g' b') == RGB r' g' b'
 
 prop_fromToY'CbCr709 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr709 y' cb cr =

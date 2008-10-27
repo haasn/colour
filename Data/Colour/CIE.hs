@@ -33,7 +33,9 @@ module Data.Colour.CIE
 where
 
 import Data.List
-import Data.Colour.Internal
+import Data.Colour
+import Data.Colour.RGBSpace
+import Data.Colour.Internal (rgb709, toRGB709, rgb709Space)
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix
 
@@ -50,7 +52,7 @@ cieXYZ x y z = rgb709 r g b
 toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
 toCIEXYZ c = (x,y,z)
  where
-  (r,g,b) = toRGB709 c
+  RGB r g b = toRGB709 c
   [x,y,z] = mult matrix [r,g,b]
   matrix = map (map fromRational) rgb7092xyz
 

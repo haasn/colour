@@ -23,17 +23,19 @@ THE SOFTWARE.
 module Data.Colour.Luma where
 {- For internal use only:
    Not to be exported from the package -}
-import Data.Colour.Internal
+import Data.Colour
+import Data.Colour.RGBSpace
+import Data.Colour.Internal (quantize)
 import Data.Word
 
 type LumaCoef = (Rational, Rational, Rational)
 
-luma :: (Ord a, Floating a) => LumaCoef -> (Colour a -> (a, a, a))
+luma :: (Ord a, Floating a) => LumaCoef -> (Colour a -> RGB a)
                                         -> Colour a -> a
 luma (lr, lg, lb) toRGB c =
   transformBy [fromRational lr, fromRational lg, fromRational lb]
  where
-  (r',g',b') = toRGB c
+  RGB r' g' b' = toRGB c
   transformBy l = sum $ zipWith (*) l [r',g',b']
 
 y'PbPr :: (Ord a, Floating a) => LumaCoef -> (a -> a -> a -> Colour a) 
@@ -44,12 +46,12 @@ y'PbPr (lr, lg, lb) rgb y' pb pr = rgb r' g' b'
   g' = (y' - fromRational lr*r' - fromRational lb*b')/fromRational lg
   b' = y' + fromRational ((lg + lr)/0.5)*pb
 
-toY'PbPr :: (Ord a, Floating a) => LumaCoef -> (Colour a -> (a, a, a))
+toY'PbPr :: (Ord a, Floating a) => LumaCoef -> (Colour a -> RGB a)
                                             -> Colour a -> (a, a, a)
 toY'PbPr l@(lr, lg, lb) toRGB c = (y', pb, pr)
  where
   y' = luma l toRGB c
-  (r', g', b') = toRGB c
+  RGB r' g' b' = toRGB c
   pb = fromRational (0.5/(lg + lr))*(b' - y')
   pr = fromRational (0.5/(lg + lb))*(r' - y')
 
@@ -63,7 +65,7 @@ y'CbCr l rgb y' cb cr = y'PbPr l rgb y'0 pb pr
   pr  = ((fromIntegral cr) - 128)/224
 
 toY'CbCr :: (Floating a, RealFrac a) =>
-            LumaCoef -> (Colour a -> (a, a, a))
+            LumaCoef -> (Colour a -> RGB a)
                      -> Colour a -> (Word8, Word8, Word8)
 toY'CbCr l toRGB c = (quantize $ 16 + 219*y'
                      ,quantize $ 128 + 224*pb

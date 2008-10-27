@@ -20,34 +20,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
--- |An RGB space is characterised by chromaticities for red, green, and
--- blue, and the chromaticity of the white point.
-module Data.Colour.RGBSpace
- (RGB(..)
- ,uncurryRGB, curryRGB
+module Data.Colour.RGB where
 
- ,RGBSpace(..)
- ,rgbSpace
- ,toRGBSpace
- )
-where
+-- |An RGB triple for an unspecified colour space.
+data RGB a = RGB {channelRed :: !a
+                 ,channelGreen :: !a
+                 ,channelBlue :: !a
+                 } deriving (Eq, Show, Read)
 
-import Data.Colour
-import Data.Colour.CIE.Chromaticity
-import Data.Colour.Internal (rgb709, toRGB709, rgb709Space)
-import Data.Colour.Matrix
-import Data.Colour.RGB
+-- |Uncurries a function expecting three r, g, b parameters.
+uncurryRGB :: (a -> a -> a -> b) -> RGB a -> b
+uncurryRGB f (RGB r g b) = f r g b
 
-rgbSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
-rgbSpace space r g b = rgb709 r0 g0 b0
- where
-  matrix = matrixMult (xyz2rgb rgb709Space) (rgb2xyz space)
-  [r0,g0,b0] = mult matrix [r,g,b]
-
-toRGBSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
-toRGBSpace space c = RGB r g b
- where
-  RGB r0 g0 b0 = toRGB709 c
-  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgb709Space)
-  [r,g,b] = mult matrix [r0,g0,b0]
+-- |Curries a function expecting one RGB parameter.
+curryRGB :: (RGB a -> b) -> a -> a -> a -> b
+curryRGB f r g b = f (RGB r g b)
 

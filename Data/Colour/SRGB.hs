@@ -33,7 +33,9 @@ where
 
 import Data.Word
 import Numeric
-import Data.Colour.Internal
+import Data.Colour
+import Data.Colour.Internal (rgb709, toRGB709, quantize)
+import Data.Colour.RGBSpace
 
 {- Non-linear colour space -}
 {- the sRGB transfer function approximates a gamma of about 2.2 -}
@@ -75,10 +77,10 @@ sRGB24 :: (Ord b, Floating b) => Word8 -> Word8 -> Word8 -> Colour b
 sRGB24 = sRGBBounded
 
 -- |Return the sRGB colour components in the range [0..1].
-toSRGB :: (Ord b, Floating b) => Colour b -> (b, b, b)
-toSRGB c = (r', g', b')
+toSRGB :: (Ord b, Floating b) => Colour b -> RGB b
+toSRGB c = RGB r' g' b'
  where
-  (r,g,b) = toRGB709 c
+  RGB r g b = toRGB709 c
   r' = transferFunction r
   g' = transferFunction g
   b' = transferFunction b
@@ -88,17 +90,17 @@ toSRGB c = (r', g', b')
 -- [0..'maxBound'].
 -- Out of range values are clamped.
 toSRGBBounded :: (RealFrac b, Floating b, Integral a, Bounded a) =>
-                 Colour b -> (a,a,a)
-toSRGBBounded c = (r', g', b')
+                 Colour b -> RGB a
+toSRGBBounded c = RGB r' g' b'
  where
-  (r'0, g'0, b'0) = toSRGB c
+  RGB r'0 g'0 b'0 = toSRGB c
   (r', g', b') = (quantize (m*r'0), quantize (m*g'0), quantize (m*b'0))
   m = fromIntegral $ maxBound `asTypeOf` r'
 
 -- |Return the approximate 24-bit sRGB colour components as three 8-bit
 -- components.
 -- Out of range values are clamped.
-toSRGB24 :: (RealFrac b, Floating b) => Colour b -> (Word8, Word8, Word8)
+toSRGB24 :: (RealFrac b, Floating b) => Colour b -> RGB Word8
 toSRGB24 = toSRGBBounded
 
 -- |Show a colour in hexadecimal form, e.g. \"#00aaff\"
@@ -106,7 +108,7 @@ sRGB24shows :: (RealFrac b, Floating b) => Colour b -> ShowS
 sRGB24shows c =
   ("#"++) . showHex2 r' . showHex2 g' . showHex2 b'
  where
-  (r', g', b') = toSRGB24 c
+  RGB r' g' b' = toSRGB24 c
   showHex2 x | x <= 0xf = ("0"++) . showHex x
              | otherwise = showHex x
 
