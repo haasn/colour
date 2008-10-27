@@ -24,11 +24,166 @@ THE SOFTWARE.
 -- |Names for colours.
 -- Names taken from SVG 1.1 specification
 -- <http://www.w3.org/TR/SVG11/types.html#ColorKeywords>.
+--
+-- 'readColourName' takes a string naming a colour (must be all lowercase)
+-- and returns the colour.
+-- Fails if the name is not recognized.
 module Data.Colour.Names where
 
 import Prelude hiding (tan)
 import Data.Colour.SRGB
 import Data.Colour
+
+readColourName :: (Monad m, Ord a, Floating a) => String -> m (Colour a)
+readColourName "aliceblue" = return aliceblue
+readColourName "antiquewhite" = return antiquewhite
+readColourName "aqua" = return aqua
+readColourName "aquamarine" = return aquamarine
+readColourName "azure" = return azure
+readColourName "beige" = return beige
+readColourName "bisque" = return bisque
+readColourName "black" = return black
+readColourName "blanchedalmond" = return blanchedalmond
+readColourName "blue" = return blue
+readColourName "blueviolet" = return blueviolet
+readColourName "brown" = return brown
+readColourName "burlywood" = return burlywood
+readColourName "cadetblue" = return cadetblue
+readColourName "chartreuse" = return chartreuse
+readColourName "chocolate" = return chocolate
+readColourName "coral" = return coral
+readColourName "cornflowerblue" = return cornflowerblue
+readColourName "cornsilk" = return cornsilk
+readColourName "crimson" = return crimson
+readColourName "cyan" = return cyan
+readColourName "darkblue" = return darkblue
+readColourName "darkcyan" = return darkcyan
+readColourName "darkgoldenrod" = return darkgoldenrod
+readColourName "darkgray" = return darkgray
+readColourName "darkgreen" = return darkgreen
+readColourName "darkgrey" = return darkgrey
+readColourName "darkkhaki" = return darkkhaki
+readColourName "darkmagenta" = return darkmagenta
+readColourName "darkolivegreen" = return darkolivegreen
+readColourName "darkorange" = return darkorange
+readColourName "darkorchid" = return darkorchid
+readColourName "darkred" = return darkred
+readColourName "darksalmon" = return darksalmon
+readColourName "darkseagreen" = return darkseagreen
+readColourName "darkslateblue" = return darkslateblue
+readColourName "darkslategray" = return darkslategray
+readColourName "darkslategrey" = return darkslategrey
+readColourName "darkturquoise" = return darkturquoise
+readColourName "darkviolet" = return darkviolet
+readColourName "deeppink" = return deeppink
+readColourName "deepskyblue" = return deepskyblue
+readColourName "dimgray" = return dimgray
+readColourName "dimgrey" = return dimgrey
+readColourName "dodgerblue" = return dodgerblue
+readColourName "firebrick" = return firebrick
+readColourName "floralwhite" = return floralwhite
+readColourName "forestgreen" = return forestgreen
+readColourName "fuchsia" = return fuchsia
+readColourName "gainsboro" = return gainsboro
+readColourName "ghostwhite" = return ghostwhite
+readColourName "gold" = return gold
+readColourName "goldenrod" = return goldenrod
+readColourName "gray" = return gray
+readColourName "grey" = return grey
+readColourName "green" = return green
+readColourName "greenyellow" = return greenyellow
+readColourName "honeydew" = return honeydew
+readColourName "hotpink" = return hotpink
+readColourName "indianred" = return indianred
+readColourName "indigo" = return indigo
+readColourName "ivory" = return ivory
+readColourName "khaki" = return khaki
+readColourName "lavender" = return lavender
+readColourName "lavenderblush" = return lavenderblush
+readColourName "lawngreen" = return lawngreen
+readColourName "lemonchiffon" = return lemonchiffon
+readColourName "lightblue" = return lightblue
+readColourName "lightcoral" = return lightcoral
+readColourName "lightcyan" = return lightcyan
+readColourName "lightgoldenrodyellow" = return lightgoldenrodyellow
+readColourName "lightgray" = return lightgray
+readColourName "lightgreen" = return lightgreen
+readColourName "lightgrey" = return lightgrey
+readColourName "lightpink" = return lightpink
+readColourName "lightsalmon" = return lightsalmon
+readColourName "lightseagreen" = return lightseagreen
+readColourName "lightskyblue" = return lightskyblue
+readColourName "lightslategray" = return lightslategray
+readColourName "lightslategrey" = return lightslategrey
+readColourName "lightsteelblue" = return lightsteelblue
+readColourName "lightyellow" = return lightyellow
+readColourName "lime" = return lime
+readColourName "limegreen" = return limegreen
+readColourName "linen" = return linen
+readColourName "magenta" = return magenta
+readColourName "maroon" = return maroon
+readColourName "mediumaquamarine" = return mediumaquamarine
+readColourName "mediumblue" = return mediumblue
+readColourName "mediumorchid" = return mediumorchid
+readColourName "mediumpurple" = return mediumpurple
+readColourName "mediumseagreen" = return mediumseagreen
+readColourName "mediumslateblue" = return mediumslateblue
+readColourName "mediumspringgreen" = return mediumspringgreen
+readColourName "mediumturquoise" = return mediumturquoise
+readColourName "mediumvioletred" = return mediumvioletred
+readColourName "midnightblue" = return midnightblue
+readColourName "mintcream" = return mintcream
+readColourName "mistyrose" = return mistyrose
+readColourName "moccasin" = return moccasin
+readColourName "navajowhite" = return navajowhite
+readColourName "navy" = return navy
+readColourName "oldlace" = return oldlace
+readColourName "olive" = return olive
+readColourName "olivedrab" = return olivedrab
+readColourName "orange" = return orange
+readColourName "orangered" = return orangered
+readColourName "orchid" = return orchid
+readColourName "palegoldenrod" = return palegoldenrod
+readColourName "palegreen" = return palegreen
+readColourName "paleturquoise" = return paleturquoise
+readColourName "palevioletred" = return palevioletred
+readColourName "papayawhip" = return papayawhip
+readColourName "peachpuff" = return peachpuff
+readColourName "peru" = return peru
+readColourName "pink" = return pink
+readColourName "plum" = return plum
+readColourName "powderblue" = return powderblue
+readColourName "purple" = return purple
+readColourName "red" = return red
+readColourName "rosybrown" = return rosybrown
+readColourName "royalblue" = return royalblue
+readColourName "saddlebrown" = return saddlebrown
+readColourName "salmon" = return salmon
+readColourName "sandybrown" = return sandybrown
+readColourName "seagreen" = return seagreen
+readColourName "seashell" = return seashell
+readColourName "sienna" = return sienna
+readColourName "silver" = return silver
+readColourName "skyblue" = return skyblue
+readColourName "slateblue" = return slateblue
+readColourName "slategray" = return slategray
+readColourName "slategrey" = return slategrey
+readColourName "snow" = return snow
+readColourName "springgreen" = return springgreen
+readColourName "steelblue" = return steelblue
+readColourName "tan" = return tan
+readColourName "teal" = return teal
+readColourName "thistle" = return thistle
+readColourName "tomato" = return tomato
+readColourName "turquoise" = return turquoise
+readColourName "violet" = return violet
+readColourName "wheat" = return wheat
+readColourName "white" = return white
+readColourName "whitesmoke" = return whitesmoke
+readColourName "yellow" = return yellow
+readColourName "yellowgreen" = return yellowgreen
+readColourName x = fail $ 
+  "Data.Colour.Names.readColourNames: Unknown colour name "++show x
 
 aliceblue :: (Ord a, Floating a) => Colour a
 aliceblue = sRGB24 240 248 255
