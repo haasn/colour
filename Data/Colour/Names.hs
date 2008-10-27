@@ -22,7 +22,8 @@ THE SOFTWARE.
 -}
 
 -- |Names for colours.
--- Names taken from SVG 1.0 specification.
+-- Names taken from SVG 1.1 specification
+-- <http://www.w3.org/TR/SVG11/types.html#ColorKeywords>.
 module Data.Colour.Names where
 
 import Prelude hiding (tan)

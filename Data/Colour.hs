@@ -40,15 +40,17 @@ module Data.Colour
  ,colourConvert
 
  ,AlphaColour
- ,opaque, disolve, withOpacity
+ ,opaque, withOpacity
  ,transparent
  ,alphaColourConvert
  ,alphaChannel
 
+ -- *Colour operations
+ -- |These operations allow combine and modify existing colours
  ,AffineSpace(..), blend
 
  ,ColourOps(..)
- ,atop
+ ,disolve, atop
  )
 where
 

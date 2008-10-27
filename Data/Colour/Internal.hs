@@ -34,10 +34,16 @@ data Green = Green
 data Blue = Blue
 
 -- |This type represents the human preception of colour.
--- The @a@ parameter is a numeric type used internally for the representation.
+-- The @a@ parameter is a numeric type used internally for the
+-- representation.
+--
+-- The 'Monoid' instance allows one to add colours, but beware that adding
+-- colours can take you out of gamut.  Consider using 'blend' whenever
+-- possible.
 
 -- Internally we store the colour in linear ITU-R BT.709 RGB colour space. 
-data Colour a = RGB !(Chan Red a) !(Chan Green a) !(Chan Blue a) deriving (Eq)
+data Colour a = RGB !(Chan Red a) !(Chan Green a) !(Chan Blue a) 
+                deriving (Eq)
 
 -- |Constructs a 'Colour' from RGB values using the /linear/ RGB colour
 -- space specified in Rec.709.
@@ -82,6 +88,10 @@ instance (Num a) => Monoid (Colour a) where
 data Alpha = Alpha
 
 -- |This type represents a 'Colour' that may be semi-transparent.
+--
+-- The 'Monoid' instance allows you to composite colours.
+--
+-- >x `mappend` y == x `over` y
 
 -- Internally we use a premultiplied-alpha representation.
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
@@ -107,7 +117,7 @@ instance (Fractional a, Read a) => Read (AlphaColour a) where
                          ,(o,s)  <- readsPrec (infix_prec+1) r3]) r
 
 -- |This 'AlphaColour' is entirely transparent and has no associated
--- 'colourChannel'.
+-- colour channel.
 transparent :: (Num a) => AlphaColour a
 transparent = RGBA (RGB Chan.empty Chan.empty Chan.empty) Chan.empty
 
@@ -171,7 +181,8 @@ class ColourOps f where
  -- 'AlphaColour'.
  over :: (Num a) => AlphaColour a -> f a -> f a
  -- |@darken s c@ blends a colour with black without changing it's opacity.
- -- For 'Colour', darken s c = blend s c black
+ --
+ -- For 'Colour', @darken s c = blend s c black@
  darken :: (Num a) => a -> f a -> f a
 
 instance ColourOps Colour where
