@@ -24,6 +24,7 @@ module Data.Colour.Internal where
 
 import Data.List
 import qualified Data.Colour.RGB
+import Data.Colour.RGB (RGBSpace(..))
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.CIE.Illuminant
 import qualified Data.Colour.Chan as Chan
@@ -234,9 +235,10 @@ colourChannel :: (Fractional a) => AlphaColour a -> Colour a
 colourChannel (RGBA c (Chan a)) = darken (recip a) c
 
 rgb709Space :: Fractional a => RGBSpace a
-rgb709Space = RGBSpace (cieChroma 0.64 0.33)
-                       (cieChroma 0.30 0.60)
-                       (cieChroma 0.15 0.06)
+rgb709Space = RGBSpace (Data.Colour.RGB.RGB
+                        (cieChroma 0.64 0.33)
+                        (cieChroma 0.30 0.60)
+                        (cieChroma 0.15 0.06))
                        d65
 
 --------------------------------------------------------------------------

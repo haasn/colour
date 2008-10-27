@@ -36,6 +36,7 @@ import Data.Colour.CIE
 import Data.Colour.Names
 import Data.Colour.HDTV as HDTV
 import qualified Data.Colour.SDTV as SDTV
+import Data.Colour.RGB
 import Data.Colour.RGBSpace
 
 default (Rational, Double, Float)
@@ -84,18 +85,18 @@ instance (Fractional a, Arbitrary a) =>
    where
     (x,y,_) = chroma_coords c
 
+instance (Arbitrary a) => Arbitrary (RGB a) where
+  arbitrary = liftM3 RGB arbitrary arbitrary arbitrary
+  coarbitrary (RGB r g b) = coarbitrary (r,g,b)
+
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (RGBSpace a) where
-  arbitrary = liftM4 RGBSpace arbitrary arbitrary arbitrary arbitrary
-  coarbitrary (RGBSpace a b c d) = coarbitrary a . coarbitrary b 
-                                 . coarbitrary c . coarbitrary d
+  arbitrary = liftM2 RGBSpace arbitrary arbitrary
+  coarbitrary (RGBSpace p w) = coarbitrary p . coarbitrary w
 
-good (RGBSpace r g b w) = p1 && p2
+good (RGBSpace p w) = p1 && p2
  where
-  chroma_list a = [x,y,z]
-   where
-    (x,y,z) = chroma_coords a
-  p1 = 0 /= determinant (map chroma_list [r,g,b])
+  p1 = 0 /= determinant (primaryMatrix p)
   p2 = 0 /= let (x,y,z) = chroma_coords w in y
 
 prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)

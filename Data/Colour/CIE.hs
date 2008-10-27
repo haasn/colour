@@ -34,7 +34,7 @@ where
 
 import Data.List
 import Data.Colour
-import Data.Colour.RGBSpace
+import Data.Colour.RGB
 import Data.Colour.Internal (rgb709, toRGB709, rgb709Space)
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix

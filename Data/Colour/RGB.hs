@@ -22,6 +22,10 @@ THE SOFTWARE.
 -}
 module Data.Colour.RGB where
 
+import Data.List
+import Data.Colour.Matrix
+import Data.Colour.CIE.Chromaticity
+
 -- |An RGB triple for an unspecified colour space.
 data RGB a = RGB {channelRed :: !a
                  ,channelGreen :: !a
@@ -35,4 +39,32 @@ uncurryRGB f (RGB r g b) = f r g b
 -- |Curries a function expecting one RGB parameter.
 curryRGB :: (RGB a -> b) -> a -> a -> a -> b
 curryRGB f r g b = f (RGB r g b)
+
+-- Should a always be Rational?
+data RGBSpace a = RGBSpace {primaries :: !(RGB (Chromaticity a))
+                           ,whitePoint   :: !(Chromaticity a)
+                           } deriving (Eq, Read, Show)
+
+{- not for export -}
+
+primaryMatrix :: (Fractional a) => (RGB (Chromaticity a)) -> [[a]]
+primaryMatrix (RGB rp gp bp) =
+  [[xr, xg, xb]
+  ,[yr, yg, yb]
+  ,[zr, zg, zb]]
+ where
+  (xr, yr, zr) = chroma_coords rp
+  (xg, yg, zg) = chroma_coords gp
+  (xb, yb, zb) = chroma_coords bp
+
+rgb2xyz :: (Fractional a) => RGBSpace a -> [[a]]
+rgb2xyz space =
+  transpose (zipWith (map . (*)) as (transpose matrix))
+ where
+  (xn, yn, zn) = chroma_coords (whitePoint space)
+  matrix = primaryMatrix (primaries space)
+  as = mult (inverse matrix) [xn/yn, 1, zn/yn]
+
+xyz2rgb :: (Fractional a) => RGBSpace a -> [[a]]
+xyz2rgb = inverse . rgb2xyz
 
