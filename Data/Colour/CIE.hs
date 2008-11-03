@@ -39,7 +39,7 @@ import Data.Colour.Internal (rgb709, toRGB709, rgb709Space)
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix
 
--- |Construct a 'Colour' from XYZ coordinates for the 2° standard
+-- |Construct a 'Colour' from XYZ coordinates for the 2&#176; standard
 -- (colourimetric) observer.
 cieXYZ :: (Fractional a) => a -> a -> a -> Colour a
 cieXYZ x y z = rgb709 r g b
@@ -47,7 +47,7 @@ cieXYZ x y z = rgb709 r g b
   [r,g,b] = mult matrix [x,y,z]
   matrix = map (map fromRational) xyz2rgb709
 
--- |Return the XYZ colour coordinates for the 2° standard
+-- |Return the XYZ colour coordinates for the 2&#176; standard
 -- (colourimetric) observer.
 toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
 toCIEXYZ c = (x,y,z)
@@ -61,7 +61,7 @@ rgb7092xyz = (rgb2xyz rgb709Space)
 xyz2rgb709 = inverse rgb7092xyz
 
 {- CIE luminance -}
--- |Returns the Y colour coordinate (luminance) for the 2° standard
+-- |Returns the Y colour coordinate (luminance) for the 2&#176; standard
 -- (colourimetric) observer.
 luminance :: (Fractional a) => Colour a -> a
 luminance c = y

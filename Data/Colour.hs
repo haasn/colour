@@ -36,7 +36,8 @@ THE SOFTWARE.
 --
 -- - "Data.Colour.SDTV"
 module Data.Colour
- (Colour
+ ( -- *Colour type
+  Colour
  ,colourConvert
 
  ,AlphaColour

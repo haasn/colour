@@ -25,12 +25,12 @@ module Data.Colour.CIE.Chromaticity where
 data Chromaticity a = Chroma !a !a deriving (Eq)
 
 -- |Returns the CIE little /x/, little /y/, little /z/ coordinates
--- for the 2° standard (colourimetric) observer.
+-- for the 2&#176; standard (colourimetric) observer.
 chroma_coords :: (Fractional a) => Chromaticity a -> (a, a, a)
 chroma_coords (Chroma x y) = (x, y, 1 - x - y)
 
 -- |Constructs 'Chromaticity' from the CIE little /x/, little /y/
--- coordinates for the 2° standard (colourimetric) observer.
+-- coordinates for the 2&#176; standard (colourimetric) observer.
 cieChroma :: (Fractional a) => a -> a -> Chromaticity a
 cieChroma = Chroma
 

@@ -22,7 +22,7 @@ THE SOFTWARE.
 -}
 
 -- |Names for colours.
--- Names taken from SVG 1.1 specification
+-- Names taken from SVG 1.1 specification,
 -- <http://www.w3.org/TR/SVG11/types.html#ColorKeywords>.
 --
 -- 'readColourName' takes a string naming a colour (must be all lowercase)

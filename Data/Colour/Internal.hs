@@ -152,12 +152,18 @@ class AffineSpace f where
  -- e.g.
  --
  -- >affineCombo [(0.2,a), (0.3,b)] c == 0.2*a + 0.3*b + 0.4*c
+ --
+ -- Weights can be negative, or greater than 1.0; however, be aware
+ -- that non-convex combinations may lead to out of gamut colours.
  affineCombo :: (Num a) => [(a,f a)] -> f a -> f a
 
 -- |Compute the weighted average of two points.
 -- e.g.
 --
 -- >blend 0.4 a b = 0.4*a + 0.6*b
+--
+-- The weight can be negative, or greater than 1.0; however, be aware
+-- that non-convex combinations may lead to out of gamut colours.
 blend :: (Num a, AffineSpace f) => a -> f a -> f a -> f a
 blend weight c1 c2 = affineCombo [(weight,c1)] c2
 
