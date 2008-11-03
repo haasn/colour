@@ -94,6 +94,11 @@ data Alpha = Alpha
 -- The 'Monoid' instance allows you to composite colours.
 --
 -- >x `mappend` y == x `over` y
+--
+-- To get the (pre-multiplied) colour channel of an 'AlphaColour' @c@,
+-- simply composite @c@ over black.
+--
+-- >c `over` (mempty :: Colour a)
 
 -- Internally we use a premultiplied-alpha representation.
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
@@ -132,7 +137,7 @@ alphaColourConvert (RGBA c a) = RGBA (colourConvert c) (Chan.convert a)
 opaque :: (Num a) => Colour a -> AlphaColour a
 opaque c = RGBA c Chan.full
 
--- |Returns a 'AlphaColour' more transparent by a factor of @o@.
+-- |Returns an 'AlphaColour' more transparent by a factor of @o@.
 disolve :: (Num a) => a -> AlphaColour a -> AlphaColour a
 disolve o (RGBA c a) = RGBA (darken o c) (Chan.scale o a)
 
@@ -190,7 +195,7 @@ class ColourOps f where
  over :: (Num a) => AlphaColour a -> f a -> f a
  -- |@darken s c@ blends a colour with black without changing it's opacity.
  --
- -- For 'Colour', @darken s c = blend s c black@
+ -- For 'Colour', @darken s c = blend s c mempty@
  darken :: (Num a) => a -> f a -> f a
 
 instance ColourOps Colour where
@@ -212,6 +217,13 @@ instance (Num a) => Monoid (AlphaColour a) where
   mempty = transparent
   mappend = over
 
+-- | @c1 \`atop\` c2@ returns the 'AlphaColour' produced by covering
+-- the portion of @c2@ visible by @c1@.
+-- The resulting alpha channel is always the same as the alpha channel
+-- of @c2@.
+--
+-- >c1 `atop` (opaque c2) == c1 `over` (opaque c2)
+-- >AlphaChannel (c1 `atop` c2) == AlphaChannel c2
 atop :: (Fractional a) => AlphaColour a -> AlphaColour a -> AlphaColour a
 atop (RGBA c0 (Chan a0)) (RGBA c1 (Chan a1)) = 
   RGBA (darken a1 c0 `mappend` darken (1-a0) c1) (Chan a1)
