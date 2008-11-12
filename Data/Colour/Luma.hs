@@ -72,3 +72,17 @@ toY'CbCr l toRGB c = (quantize $ 16 + 219*y'
                      ,quantize $ 128 + 224*pr)
  where
   (y', pb, pr) = toY'PbPr l toRGB c
+
+r'g'b' :: (Floating a, RealFrac a) =>
+          (a -> a -> a -> Colour a) ->
+          Word8 -> Word8 -> Word8 -> Colour a
+r'g'b' rgb r' g' b' = rgb (f r') (f g') (f b')
+ where
+  f x' = ((fromIntegral x') - 16)/219
+
+toR'G'B' :: (Floating a, RealFrac a) =>
+            (Colour a -> RGB a) ->
+            Colour a -> RGB Word8
+toR'G'B' toRGB c = fmap f (toRGB c)
+ where
+  f x' = quantize $ 16 + 219*x'

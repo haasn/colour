@@ -41,6 +41,7 @@ where
 import Data.Word
 import Data.Colour.Internal
 import Data.Colour.SRGB
+import Data.Colour.RGBSpace (RGB)
 import qualified Data.Colour.Luma as L
 
 {- rec 709 luma -}
@@ -56,13 +57,21 @@ y'PbPr = L.y'PbPr lumaCoef sRGB
 toY'PbPr :: (Ord a, Floating a) => Colour a -> (a, a, a)
 toY'PbPr = L.toY'PbPr lumaCoef toSRGB
 
--- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.
+-- |Construct a 'Colour' from Y'CbRr studio 8-bit coordinates.
 y'CbCr :: (Floating a, RealFrac a) => Word8 -> Word8 -> Word8 -> Colour a
 y'CbCr = L.y'CbCr lumaCoef sRGB
 
--- |Returns the Y'CbCr 8-bit coordinates of a 'Colour'.
+-- |Returns the Y'CbCr studio 8-bit coordinates of a 'Colour'.
 toY'CbCr :: (Floating a, RealFrac a) => Colour a -> (Word8, Word8, Word8)
 toY'CbCr = L.toY'CbCr lumaCoef toSRGB
+
+-- |Construct a 'Colour' from R'G'B' studio 8-bit coordinates.
+r'g'b' :: (Floating a, RealFrac a) => Word8 -> Word8 -> Word8 -> Colour a
+r'g'b' = L.r'g'b' sRGB
+
+-- |Returns the Y'CbCr studio 8-bit coordinates of a 'Colour'.
+toR'G'B' :: (Floating a, RealFrac a) => Colour a -> RGB Word8
+toR'G'B' = L.toR'G'B' toSRGB
 
 {- Not for export -}
 lumaCoef = (0.2126, 0.7152, 0.0722)
