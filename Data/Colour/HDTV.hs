@@ -46,23 +46,23 @@ import qualified Data.Colour.Luma as L
 {- rec 709 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Ord a, Floating a) => Colour a -> a
-luma = L.luma lumaCoef toRGB709
+luma = L.luma lumaCoef toSRGB
 
 -- |Construct a 'Colour' from Y'PbPr coordinates.
 y'PbPr :: (Ord a, Floating a) => a -> a -> a -> Colour a
-y'PbPr = L.y'PbPr lumaCoef rgb709
+y'PbPr = L.y'PbPr lumaCoef sRGB
 
 -- |Returns the Y'PbPr coordinates of a 'Colour'.
 toY'PbPr :: (Ord a, Floating a) => Colour a -> (a, a, a)
-toY'PbPr = L.toY'PbPr lumaCoef toRGB709
+toY'PbPr = L.toY'PbPr lumaCoef toSRGB
 
 -- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.
 y'CbCr :: (Floating a, RealFrac a) => Word8 -> Word8 -> Word8 -> Colour a
-y'CbCr = L.y'CbCr lumaCoef rgb709
+y'CbCr = L.y'CbCr lumaCoef sRGB
 
 -- |Returns the Y'CbCr 8-bit coordinates of a 'Colour'.
 toY'CbCr :: (Floating a, RealFrac a) => Colour a -> (Word8, Word8, Word8)
-toY'CbCr = L.toY'CbCr lumaCoef toRGB709
+toY'CbCr = L.toY'CbCr lumaCoef toSRGB
 
 {- Not for export -}
 lumaCoef = (0.2126, 0.7152, 0.0722)
