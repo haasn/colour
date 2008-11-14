@@ -51,7 +51,7 @@ module Data.Colour
  ,AffineSpace(..), blend
 
  ,ColourOps(..)
- ,disolve, atop
+ ,dissolve, atop
  )
 where
 

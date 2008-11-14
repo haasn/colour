@@ -138,12 +138,12 @@ opaque :: (Num a) => Colour a -> AlphaColour a
 opaque c = RGBA c Chan.full
 
 -- |Returns an 'AlphaColour' more transparent by a factor of @o@.
-disolve :: (Num a) => a -> AlphaColour a -> AlphaColour a
-disolve o (RGBA c a) = RGBA (darken o c) (Chan.scale o a)
+dissolve :: (Num a) => a -> AlphaColour a -> AlphaColour a
+dissolve o (RGBA c a) = RGBA (darken o c) (Chan.scale o a)
 
 -- |Creates an 'AlphaColour' from a 'Colour' with a given opacity.
 --
--- >c `withOpacity` o == disolve o (opaque c) 
+-- >c `withOpacity` o == dissolve o (opaque c) 
 withOpacity :: (Num a) => Colour a -> a -> AlphaColour a
 c `withOpacity` o = RGBA (darken o c) (Chan o)
 
@@ -180,7 +180,7 @@ instance AffineSpace Colour where
 
 instance AffineSpace AlphaColour where
  affineCombo l z =
-   foldl1' rgbaAdd [disolve w a | (w,a) <- (1-total,z):l]
+   foldl1' rgbaAdd [dissolve w a | (w,a) <- (1-total,z):l]
   where
    total = sum $ map fst l
 

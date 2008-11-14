@@ -140,10 +140,10 @@ prop_fromToY'CbCr601 y' cb cr =
 -}
 
 prop_disolveId :: RAlphaColour -> Bool
-prop_disolveId c = disolve 1 c == c
+prop_disolveId c = dissolve 1 c == c
 
 prop_disolveTransparent :: RAlphaColour -> Bool
-prop_disolveTransparent c = disolve 0 c == transparent
+prop_disolveTransparent c = dissolve 0 c == transparent
 
 prop_transparentOver :: RColour -> Bool
 prop_transparentOver c = transparent `over` c == c
@@ -225,8 +225,8 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("sRGB-from-to", test prop_fromToSRGB)
         ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
 --        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
-        ,("disolve-id", test prop_disolveId)
-        ,("disolve-transparent", test prop_disolveTransparent)
+        ,("dissolve-id", test prop_disolveId)
+        ,("dissolve-transparent", test prop_disolveTransparent)
         ,("transparent-over", test prop_transparentOver)
         ,("over-transparent", test prop_overTransparent)
         ,("opaque-over", test prop_opaqueOver)
