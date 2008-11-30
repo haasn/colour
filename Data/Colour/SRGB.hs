@@ -34,7 +34,8 @@ where
 import Data.Word
 import Numeric
 import Data.Colour
-import Data.Colour.Internal (rgb709, toRGB709, quantize)
+import Data.Colour.Internal (quantize)
+import Data.Colour.SRGB.Linear
 import Data.Colour.RGBSpace
 
 {- Non-linear colour space -}
@@ -55,7 +56,7 @@ invTransferFunction nonLin | nonLin == 1       = 1
 -- |Construct a colour from an sRGB specification.
 -- Input components are expected to be in the range [0..1].
 sRGB :: (Ord b, Floating b) =>  b -> b -> b -> Colour b
-sRGB = curryRGB (uncurryRGB rgb709 . fmap invTransferFunction)
+sRGB = curryRGB (uncurryRGB rgb . fmap invTransferFunction)
 
 -- |Construct a colour from an sRGB specification.
 -- Input components are expected to be in the range [0..'maxBound'].
@@ -73,7 +74,7 @@ sRGB24 = sRGBBounded
 
 -- |Return the sRGB colour components in the range [0..1].
 toSRGB :: (Ord b, Floating b) => Colour b -> RGB b
-toSRGB c = fmap transferFunction (toRGB709 c)
+toSRGB c = fmap transferFunction (toRGB c)
 
 {- Results are clamped and quantized -}
 -- |Return the approximate sRGB colour components in the range

@@ -34,7 +34,6 @@ module Data.Colour.HDTV
  (luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
- ,rgb709, toRGB709, rgb709Space
  )
 where
 

@@ -19,6 +19,7 @@ Library
   Build-Depends:     base
   Exposed-Modules:   Data.Colour
                      Data.Colour.SRGB
+                     Data.Colour.SRGB.Linear
                      Data.Colour.CIE
                      Data.Colour.CIE.Illuminant
                      Data.Colour.RGBSpace

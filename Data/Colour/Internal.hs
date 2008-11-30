@@ -25,8 +25,6 @@ module Data.Colour.Internal where
 import Data.List
 import qualified Data.Colour.RGB
 import Data.Colour.RGB (RGBSpace(..))
-import Data.Colour.CIE.Chromaticity
-import Data.Colour.CIE.Illuminant
 import qualified Data.Colour.Chan as Chan
 import Data.Colour.Chan (Chan(Chan))
 import Data.Monoid
@@ -46,16 +44,6 @@ data Blue = Blue
 -- Internally we store the colour in linear ITU-R BT.709 RGB colour space. 
 data Colour a = RGB !(Chan Red a) !(Chan Green a) !(Chan Blue a) 
                 deriving (Eq)
-
--- |Constructs a 'Colour' from RGB values using the /linear/ RGB colour
--- space specified in Rec.709.
-rgb709 :: (Fractional a) => a -> a -> a -> Colour a
-rgb709 r g b = RGB (Chan r) (Chan g) (Chan b)
-
--- |Return RGB values using the /linear/ RGB colour space specified in
--- Rec.709.
-toRGB709 :: (Fractional a) => Colour a -> Data.Colour.RGB.RGB a
-toRGB709 (RGB (Chan r) (Chan g) (Chan b)) = Data.Colour.RGB.RGB r g b
 
 -- |Change the type used to represent the colour coordinates.
 colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
@@ -251,13 +239,6 @@ alphaChannel (RGBA _ (Chan a)) = a
 -- >darken (recip (alphaChannel c)) (c `over` black)
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a
 colourChannel (RGBA c (Chan a)) = darken (recip a) c
-
-rgb709Space :: Fractional a => RGBSpace a
-rgb709Space = RGBSpace (Data.Colour.RGB.RGB
-                        (cieChroma 0.64 0.33)
-                        (cieChroma 0.30 0.60)
-                        (cieChroma 0.15 0.06))
-                       d65
 
 --------------------------------------------------------------------------
 -- not for export

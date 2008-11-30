@@ -32,6 +32,7 @@ import Data.Monoid
 import Data.Colour.Matrix
 import Data.Colour
 import Data.Colour.SRGB
+import Data.Colour.SRGB.Linear
 import Data.Colour.CIE
 import Data.Colour.Names
 import Data.Colour.HDTV as HDTV
@@ -63,7 +64,7 @@ instance (Real a, Fractional a, Arbitrary a) => Arbitrary (Colour a) where
     mkColour r' g' b' = colourConvert (sRGB24 r' g' b'::Colour Double)
   coarbitrary c = coarbitrary (r,g,b)
    where
-    (RGB r g b) = toRGB709 c
+    (RGB r g b) = toRGB c
 
 instance (Real a, Fractional a, Arbitrary a) =>
          Arbitrary (AlphaColour a) where
@@ -108,11 +109,11 @@ prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
   v :: [Rational]
   v = [x,y,z]
 
-prop_toFromRGB709 :: RColour -> Bool
-prop_toFromRGB709 c = uncurryRGB rgb709 (toRGB709 c) == c
+prop_toFromRGB :: RColour -> Bool
+prop_toFromRGB c = uncurryRGB rgb (toRGB c) == c
 
-prop_fromToRGB709 :: Rational -> Rational -> Rational -> Bool
-prop_fromToRGB709 r g b = toRGB709 (rgb709 r g b) == RGB r g b
+prop_fromToRGB :: Rational -> Rational -> Rational -> Bool
+prop_fromToRGB r g b = toRGB (rgb r g b) == RGB r g b
 
 prop_toFromXYZ :: RColour -> Bool
 prop_toFromXYZ c = (cieXYZ x y z) == c
@@ -206,19 +207,19 @@ prop_readshowSRGB24 c =
 
 prop_luminance_white :: RGBSpace Rational -> Property
 prop_luminance_white space =
-  good space ==> luminance (rgbSpace space 1 1 1) == 1
+  good space ==> luminance (rgbUsingSpace space 1 1 1) == 1
 
-prop_rgb709 :: Rational -> Rational -> Rational -> Bool
-prop_rgb709 r g b =
-  rgbSpace rgb709Space r g b == rgb709 r g b
+prop_rgb :: Rational -> Rational -> Rational -> Bool
+prop_rgb r g b =
+  rgbUsingSpace rgbSpace r g b == rgb r g b
 
-prop_toRGB709 :: RColour -> Bool
-prop_toRGB709 c =
-  toRGBSpace rgb709Space c == toRGB709 c
+prop_toRGB :: RColour -> Bool
+prop_toRGB c =
+  toRGBUsingSpace rgbSpace c == toRGB c
 
 tests = [("matrix-mult", test prop_matrixMult)
-        ,("RGB709-to-from", test prop_toFromRGB709)
-        ,("RGB709-from-to", test prop_fromToRGB709)
+        ,("RGB-to-from", test prop_toFromRGB)
+        ,("RGB-from-to", test prop_fromToRGB)
         ,("XYZ-to-from", test prop_toFromXYZ)
         ,("XYZ-from-to", test prop_fromToXYZ)
         ,("sRGB-to-from", test prop_toFromSRGB)
@@ -246,8 +247,8 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("sRGB24-show-length", test prop_sRGB24showlength)
         ,("sRGB24-read-show", test prop_readshowSRGB24)
         ,("luminance-white", test prop_luminance_white)
-        ,("rgb709", test prop_rgb709)
-        ,("toRGB709", test prop_toRGB709)
+        ,("rgb", test prop_rgb)
+        ,("toRGB", test prop_toRGB)
         ]
 
 main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) tests

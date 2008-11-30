@@ -41,27 +41,27 @@ import qualified Data.Colour.Luma as L
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Ord a, Floating a) => RGBSpace a
                             -> Colour a -> a
-luma space = L.luma lumaCoef (toRGBSpace space)
+luma space = L.luma lumaCoef (toRGBUsingSpace space)
 
 -- |Construct a 'Colour' from Y'PbPr coordinates.
 y'PbPr :: (Ord a, Floating a) => RGBSpace a
                               -> a -> a -> a -> Colour a
-y'PbPr space = L.y'PbPr lumaCoef (rgbSpace space)
+y'PbPr space = L.y'PbPr lumaCoef (rgbUsingSpace space)
 
 -- |Returns the Y'PbPr coordinates of a 'Colour'.
 toY'PbPr :: (Ord a, Floating a) => RGBSpace a
                                 -> Colour a -> (a, a, a)
-toY'PbPr space = L.toY'PbPr lumaCoef (toRGBSpace space)
+toY'PbPr space = L.toY'PbPr lumaCoef (toRGBUsingSpace space)
 
 -- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.
 y'CbCr :: (Floating a, RealFrac a) => RGBSpace a
                                    -> Word8 -> Word8 -> Word8 -> Colour a
-y'CbCr space = L.y'CbCr lumaCoef (rgbSpace space)
+y'CbCr space = L.y'CbCr lumaCoef (rgbUsingSpace space)
 
 -- |Returns the Y'CbCr 8-bit coordinates of a 'Colour'.
 toY'CbCr :: (Floating a, RealFrac a) => RGBSpace a
                                      -> Colour a -> (Word8, Word8, Word8)
-toY'CbCr space = L.toY'CbCr lumaCoef (toRGBSpace space)
+toY'CbCr space = L.toY'CbCr lumaCoef (toRGBUsingSpace space)
 
 {- Not for export -}
 lumaCoef = (0.299, 0.587, 0.114)

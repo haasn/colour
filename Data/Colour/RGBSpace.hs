@@ -27,27 +27,27 @@ module Data.Colour.RGBSpace
  ,uncurryRGB, curryRGB
 
  ,RGBSpace(..)
- ,rgbSpace
- ,toRGBSpace
+ ,rgbUsingSpace
+ ,toRGBUsingSpace
  )
 where
 
 import Data.Colour
 import Data.Colour.CIE.Chromaticity
-import Data.Colour.Internal (rgb709, toRGB709, rgb709Space)
 import Data.Colour.Matrix
 import Data.Colour.RGB
+import Data.Colour.SRGB.Linear
 
-rgbSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
-rgbSpace space r g b = rgb709 r0 g0 b0
+rgbUsingSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
+rgbUsingSpace space r g b = rgb r0 g0 b0
  where
-  matrix = matrixMult (xyz2rgb rgb709Space) (rgb2xyz space)
+  matrix = matrixMult (xyz2rgb rgbSpace) (rgb2xyz space)
   [r0,g0,b0] = mult matrix [r,g,b]
 
-toRGBSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
-toRGBSpace space c = RGB r g b
+toRGBUsingSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
+toRGBUsingSpace space c = RGB r g b
  where
-  RGB r0 g0 b0 = toRGB709 c
-  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgb709Space)
+  RGB r0 g0 b0 = toRGB c
+  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgbSpace)
   [r,g,b] = mult matrix [r0,g0,b0]
 
