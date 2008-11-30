@@ -37,6 +37,7 @@ import Data.Colour
 import Data.Colour.RGBSpace
 import qualified Data.Colour.Luma as L
 
+{- #TODO# ALL BROKEN  NEEDS TO BE NONLINEAR!!! -}
 {- rec 601 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Ord a, Floating a) => RGBSpace a

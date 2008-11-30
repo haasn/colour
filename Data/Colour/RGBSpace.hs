@@ -50,4 +50,3 @@ toRGBUsingSpace space c = RGB r g b
   RGB r0 g0 b0 = toRGB c
   matrix = matrixMult (xyz2rgb space) (rgb2xyz rgbSpace)
   [r,g,b] = mult matrix [r0,g0,b0]
-

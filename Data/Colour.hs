@@ -30,8 +30,12 @@ THE SOFTWARE.
 --
 -- - "Data.Colour.SRGB"
 --
+-- - "Data.Colour.SRGB.Linear"
+--
 -- - "Data.Colour.CIE"
 --
+
+--TODO
 -- - "Data.Colour.HDTV"
 --
 -- - "Data.Colour.SDTV"

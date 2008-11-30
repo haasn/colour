@@ -70,4 +70,3 @@ rgb2xyz space =
 
 xyz2rgb :: (Fractional a) => RGBSpace a -> [[a]]
 xyz2rgb = inverse . rgb2xyz
-
