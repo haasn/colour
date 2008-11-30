@@ -50,22 +50,6 @@ colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
-instance (Fractional a) => Show (Colour a) where
-  showsPrec d c = showParen (d > app_prec) showStr
-   where
-    showStr = showString "rgb709 " . (showsPrec (app_prec+1) r)
-            . showString " "       . (showsPrec (app_prec+1) g)
-            . showString " "       . (showsPrec (app_prec+1) b)
-    Data.Colour.RGB.RGB r g b = toRGB709 c
-
-instance (Fractional a, Read a) => Read (Colour a) where
-  readsPrec d r = readParen (d > app_prec)
-                  (\r -> [(rgb709 r0 g0 b0,t)
-                         |("rgb709",s) <- lex r
-                         ,(r0,s0) <- readsPrec (app_prec+1) s
-                         ,(g0,s1) <- readsPrec (app_prec+1) s0
-                         ,(b0,t)  <- readsPrec (app_prec+1) s1]) r
-
 instance (Num a) => Monoid (Colour a) where
   mempty = RGB Chan.empty Chan.empty Chan.empty
   (RGB r1 g1 b1) `mappend` (RGB r2 g2 b2) =
@@ -90,26 +74,6 @@ data Alpha = Alpha
 
 -- Internally we use a premultiplied-alpha representation.
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
-
-instance (Fractional a) => Show (AlphaColour a) where
-  showsPrec d ac = showParen (d > infix_prec) showStr
-   where
-    showStr | a == 0 = showString "transparent"
-            | otherwise = showsPrec (infix_prec+1) c
-                        . showString " `withOpacity` "
-                        . showsPrec (infix_prec+1) a
-    a = alphaChannel ac
-    c = colourChannel ac
-
-instance (Fractional a, Read a) => Read (AlphaColour a) where
-  readsPrec d r = [(transparent,s)|("transparent",s) <- lex r]
-               ++ readParen (d > infix_prec)
-                  (\r -> [(c `withOpacity` o,s)
-                         |(c,r0) <- readsPrec (infix_prec+1) r
-                         ,("`",r1) <- lex r0
-                         ,("withOpacity",r2) <- lex r1
-                         ,("`",r3) <- lex r2
-                         ,(o,s)  <- readsPrec (infix_prec+1) r3]) r
 
 -- |This 'AlphaColour' is entirely transparent and has no associated
 -- colour channel.

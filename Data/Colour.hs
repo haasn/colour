@@ -55,4 +55,52 @@ module Data.Colour
  )
 where
 
+import Data.Char
 import Data.Colour.Internal
+import qualified Data.Colour.RGB
+import qualified Data.Colour.SRGB.Linear
+import Data.Colour.CIE.Chromaticity (app_prec, infix_prec)
+
+instance (Fractional a) => Show (Colour a) where
+  showsPrec d c = showParen (d > app_prec) showStr
+   where
+    showStr = showString linearConstructorName
+            . showString " " . (showsPrec (app_prec+1) r)
+            . showString " "       . (showsPrec (app_prec+1) g)
+            . showString " "       . (showsPrec (app_prec+1) b)
+    Data.Colour.RGB.RGB r g b = Data.Colour.SRGB.Linear.toRGB c
+
+instance (Fractional a, Read a) => Read (Colour a) where
+  readsPrec d r = readParen (d > app_prec)
+                  (\r -> [(Data.Colour.SRGB.Linear.rgb r0 g0 b0,t)
+                         |(name,s) <- mylex r
+                         ,linearConstructorName == name
+                         ,(r0,s0) <- readsPrec (app_prec+1) s
+                         ,(g0,s1) <- readsPrec (app_prec+1) s0
+                         ,(b0,t)  <- readsPrec (app_prec+1) s1]) r
+   where
+    mylex = return 
+          . span (\c -> isAlphaNum c || c `elem` "._'")
+          . dropWhile isSpace
+
+linearConstructorName = "Data.Colour.SRGB.Linear.rgb"
+
+instance (Fractional a) => Show (AlphaColour a) where
+  showsPrec d ac = showParen (d > infix_prec) showStr
+   where
+    showStr | a == 0 = showString "transparent"
+            | otherwise = showsPrec (infix_prec+1) c
+                        . showString " `withOpacity` "
+                        . showsPrec (infix_prec+1) a
+    a = alphaChannel ac
+    c = colourChannel ac
+
+instance (Fractional a, Read a) => Read (AlphaColour a) where
+  readsPrec d r = [(transparent,s)|("transparent",s) <- lex r]
+               ++ readParen (d > infix_prec)
+                  (\r -> [(c `withOpacity` o,s)
+                         |(c,r0) <- readsPrec (infix_prec+1) r
+                         ,("`",r1) <- lex r0
+                         ,("withOpacity",r2) <- lex r1
+                         ,("`",r3) <- lex r2
+                         ,(o,s)  <- readsPrec (infix_prec+1) r3]) r
