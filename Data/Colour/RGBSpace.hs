@@ -26,7 +26,7 @@ module Data.Colour.RGBSpace
  (RGB(..)
  ,uncurryRGB, curryRGB
 
- ,RGBSpace(..)
+ ,RGBGamut(..)
  ,rgbUsingSpace
  ,toRGBUsingSpace
  )
@@ -38,15 +38,15 @@ import Data.Colour.Matrix
 import Data.Colour.RGB
 import Data.Colour.SRGB.Linear
 
-rgbUsingSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
+rgbUsingSpace :: (Fractional a) => RGBGamut a -> a -> a -> a -> Colour a
 rgbUsingSpace space r g b = rgb r0 g0 b0
  where
-  matrix = matrixMult (xyz2rgb rgbSpace) (rgb2xyz space)
+  matrix = matrixMult (xyz2rgb rgbGamut) (rgb2xyz space)
   [r0,g0,b0] = mult matrix [r,g,b]
 
-toRGBUsingSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
+toRGBUsingSpace :: (Fractional a) => RGBGamut a -> Colour a -> RGB a
 toRGBUsingSpace space c = RGB r g b
  where
   RGB r0 g0 b0 = toRGB c
-  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgbSpace)
+  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgbGamut)
   [r,g,b] = mult matrix [r0,g0,b0]

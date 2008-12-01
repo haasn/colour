@@ -24,7 +24,7 @@ THE SOFTWARE.
 -- "Data.Colour.SRGB".
 module Data.Colour.SRGB.Linear 
  (rgb, toRGB
- ,rgbSpace
+ ,rgbGamut
  )
 where
 
@@ -45,8 +45,8 @@ rgb r g b = Internal.RGB (Chan r) (Chan g) (Chan b)
 toRGB :: Fractional a => Colour a -> RGB a
 toRGB (Internal.RGB (Chan r) (Chan g) (Chan b)) = RGB r g b
 
-rgbSpace :: Fractional a => RGBSpace a
-rgbSpace = RGBSpace (RGB (cieChroma 0.64 0.33)
+rgbGamut :: Fractional a => RGBGamut a
+rgbGamut = RGBGamut (RGB (cieChroma 0.64 0.33)
                          (cieChroma 0.30 0.60)
                          (cieChroma 0.15 0.06))
                     d65

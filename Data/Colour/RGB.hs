@@ -44,7 +44,7 @@ curryRGB :: (RGB a -> b) -> a -> a -> a -> b
 curryRGB f r g b = f (RGB r g b)
 
 -- Should a always be Rational?
-data RGBSpace a = RGBSpace {primaries :: !(RGB (Chromaticity a))
+data RGBGamut a = RGBGamut {primaries :: !(RGB (Chromaticity a))
                            ,whitePoint   :: !(Chromaticity a)
                            } deriving (Eq, Read, Show)
 
@@ -60,7 +60,7 @@ primaryMatrix p =
       (xg, yg, zg)
       (xb, yb, zb) = fmap chroma_coords p
 
-rgb2xyz :: (Fractional a) => RGBSpace a -> [[a]]
+rgb2xyz :: (Fractional a) => RGBGamut a -> [[a]]
 rgb2xyz space =
   transpose (zipWith (map . (*)) as (transpose matrix))
  where
@@ -68,5 +68,5 @@ rgb2xyz space =
   matrix = primaryMatrix (primaries space)
   as = mult (inverse matrix) [xn/yn, 1, zn/yn]
 
-xyz2rgb :: (Fractional a) => RGBSpace a -> [[a]]
+xyz2rgb :: (Fractional a) => RGBGamut a -> [[a]]
 xyz2rgb = inverse . rgb2xyz

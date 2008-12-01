@@ -120,7 +120,7 @@ u'v' c = (4*x/(x+15*y+3*z), 9*y/(x+15*y+3*z))
  where
   (x,y,z) = toCIEXYZ c
 
-rgb7092xyz = (rgb2xyz rgbSpace)
+rgb7092xyz = (rgb2xyz rgbGamut)
 
 xyz2rgb709 = inverse rgb7092xyz
 

@@ -91,11 +91,11 @@ instance (Arbitrary a) => Arbitrary (RGB a) where
   coarbitrary (RGB r g b) = coarbitrary (r,g,b)
 
 instance (Fractional a, Arbitrary a) =>
-         Arbitrary (RGBSpace a) where
-  arbitrary = liftM2 RGBSpace arbitrary arbitrary
-  coarbitrary (RGBSpace p w) = coarbitrary p . coarbitrary w
+         Arbitrary (RGBGamut a) where
+  arbitrary = liftM2 RGBGamut arbitrary arbitrary
+  coarbitrary (RGBGamut p w) = coarbitrary p . coarbitrary w
 
-good (RGBSpace p w) = p1 && p2
+good (RGBGamut p w) = p1 && p2
  where
   p1 = 0 /= determinant (primaryMatrix p)
   p2 = 0 /= let (x,y,z) = chroma_coords w in y
@@ -211,17 +211,17 @@ prop_readshowSRGB24 :: DColour -> Bool
 prop_readshowSRGB24 c =
   sRGB24show (sRGB24read (sRGB24show c)) == sRGB24show c
 
-prop_luminance_white :: RGBSpace Rational -> Property
+prop_luminance_white :: RGBGamut Rational -> Property
 prop_luminance_white space =
   good space ==> luminance (rgbUsingSpace space 1 1 1) == 1
 
 prop_rgb :: Rational -> Rational -> Rational -> Bool
 prop_rgb r g b =
-  rgbUsingSpace rgbSpace r g b == rgb r g b
+  rgbUsingSpace rgbGamut r g b == rgb r g b
 
 prop_toRGB :: RColour -> Bool
 prop_toRGB c =
-  toRGBUsingSpace rgbSpace c == toRGB c
+  toRGBUsingSpace rgbGamut c == toRGB c
 
 tests = [("matrix-mult", test prop_matrixMult)
         ,("RGB-to-from", test prop_toFromRGB)
