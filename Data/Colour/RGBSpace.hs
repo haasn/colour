@@ -48,23 +48,26 @@ import Data.Colour.Matrix
 import Data.Colour.RGB
 import Data.Colour.SRGB.Linear
 
-inGamut :: (Ord a, Fractional a) => RGBGamut a -> Colour a -> Bool
+inGamut :: (Ord b, Fractional b, Real a, Fractional a) => RGBGamut a -> Colour b -> Bool
 inGamut gamut c = r && g && b
  where
   test x = 0 <= x && x <= 1
   RGB r g b = fmap test (toRGBUsingGamut gamut c)
 
-rgbUsingGamut :: (Fractional a) => RGBGamut a -> a -> a -> a -> Colour a
+rtf :: (Fractional b, Real a) => [[a]] -> [[b]]
+rtf = map (map realToFrac)
+
+rgbUsingGamut :: (Fractional b, Real a, Fractional a) => RGBGamut a -> b -> b -> b -> Colour b
 rgbUsingGamut gamut r g b = rgb r0 g0 b0
  where
-  matrix = matrixMult (xyz2rgb rgbGamut) (rgb2xyz gamut)
+  matrix = rtf $ matrixMult (xyz2rgb rgbGamut) (rtf $ rgb2xyz gamut)
   [r0,g0,b0] = mult matrix [r,g,b]
 
-toRGBUsingGamut :: (Fractional a) => RGBGamut a -> Colour a -> RGB a
+toRGBUsingGamut :: (Fractional b, Real a, Fractional a) => RGBGamut a -> Colour b -> RGB b
 toRGBUsingGamut gamut c = RGB r g b
  where
   RGB r0 g0 b0 = toRGB c
-  matrix = matrixMult (xyz2rgb gamut) (rgb2xyz rgbGamut)
+  matrix = rtf $ matrixMult (rtf $ xyz2rgb gamut) (rgb2xyz rgbGamut)
   [r,g,b] = mult matrix [r0,g0,b0]
 
 data TransferFunction a = TransferFunction
@@ -84,19 +87,19 @@ instance (Num a) => Monoid (TransferFunction a) where
  (TransferFunction f0 f1 f) `mappend` (TransferFunction g0 g1 g) =
    (TransferFunction (f0 . g0) (g1 . f1) (f*g))
 
-data RGBSpace a = RGBSpace { gamut :: RGBGamut a,
-                             transferFunction :: TransferFunction a }
+data RGBSpace a b = RGBSpace { gamut :: RGBGamut a,
+                               transferFunction :: TransferFunction b }
 
-linearRGBSpace :: (Num a) => RGBGamut a -> RGBSpace a
+linearRGBSpace :: (Num b) => RGBGamut a -> RGBSpace a b
 linearRGBSpace gamut = RGBSpace gamut mempty
 
-rgbUsingSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
+rgbUsingSpace :: (Fractional b, Real a, Fractional a) => RGBSpace a b -> b -> b -> b -> Colour b
 rgbUsingSpace space = 
   curryRGB (uncurryRGB (rgbUsingGamut (gamut space)) . fmap tinv)
  where
   tinv = transferInverse (transferFunction space)
 
-toRGBUsingSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
+toRGBUsingSpace :: (Fractional b, Real a, Fractional a) => RGBSpace a b -> Colour b -> RGB b
 toRGBUsingSpace space c = fmap t (toRGBUsingGamut (gamut space) c)
  where
   t = transfer (transferFunction space)

@@ -50,6 +50,10 @@ data RGBGamut a = RGBGamut {primaries :: !(RGB (Chromaticity a))
 
 {- not for export -}
 
+gamutConvert :: (Fractional b, Real a) => RGBGamut a -> RGBGamut b
+gamutConvert (RGBGamut p w) =
+  RGBGamut (fmap chromaConvert p) (chromaConvert w)
+
 primaryMatrix :: (Fractional a) => (RGB (Chromaticity a)) -> [[a]]
 primaryMatrix p =
   [[xr, xg, xb]

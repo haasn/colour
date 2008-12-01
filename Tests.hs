@@ -223,6 +223,14 @@ prop_toRGB :: RColour -> Bool
 prop_toRGB c =
   toRGBUsingSpace (linearRGBSpace rgbGamut) c == toRGB c
 
+prop_sRGB :: Double -> Double -> Double -> Bool
+prop_sRGB r g b = rgbUsingSpace sRGBSpace r g b == sRGB r g b
+
+prop_toSRGB :: DColour -> Bool
+prop_toSRGB c =
+  toRGBUsingSpace sRGBSpace c == toSRGB c
+
+
 tests = [("matrix-mult", test prop_matrixMult)
         ,("RGB-to-from", test prop_toFromRGB)
         ,("RGB-from-to", test prop_fromToRGB)
@@ -255,6 +263,8 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("luminance-white", test prop_luminance_white)
         ,("rgb", test prop_rgb)
         ,("toRGB", test prop_toRGB)
+        ,("sRGB", test prop_sRGB)
+        ,("toSRGB", test prop_toSRGB)
         ]
 
 main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) tests
