@@ -35,8 +35,8 @@ import Data.Colour.SRGB
 import Data.Colour.SRGB.Linear
 import Data.Colour.CIE
 import Data.Colour.Names
-import Data.Colour.HDTV as HDTV
-import qualified Data.Colour.SDTV as SDTV
+--import Data.Colour.HDTV as HDTV
+--import qualified Data.Colour.SDTV as SDTV
 import Data.Colour.RGB
 import Data.Colour.RGBSpace
 
@@ -136,11 +136,11 @@ prop_toFromSRGB c = uncurryRGB sRGB24 (toSRGB24 c) == c
 prop_fromToSRGB :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToSRGB r' g' b' = toSRGB24 (sRGB24 r' g' b') == RGB r' g' b'
 
+{-
 prop_fromToY'CbCr709 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr709 y' cb cr =
   HDTV.toY'CbCr (HDTV.y'CbCr y' cb cr) == (y',cb,cr)
 
-{-
 prop_fromToY'CbCr601 :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToY'CbCr601 y' cb cr =
   SDTV.toY'CbCr (SDTV.y'CbCr y' cb cr) == (y',cb,cr)
@@ -230,7 +230,7 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("XYZ-from-to", test prop_fromToXYZ)
         ,("sRGB-to-from", test prop_toFromSRGB)
         ,("sRGB-from-to", test prop_fromToSRGB)
-        ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
+--        ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
 --        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
         ,("dissolve-id", test prop_disolveId)
         ,("dissolve-transparent", test prop_disolveTransparent)
