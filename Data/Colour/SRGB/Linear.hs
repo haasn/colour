@@ -46,7 +46,7 @@ toRGB :: Fractional a => Colour a -> RGB a
 toRGB (Internal.RGB (Chan r) (Chan g) (Chan b)) = RGB r g b
 
 -- |This is the gamut for the sRGB colour space.
-rgbGamut :: RGBGamut Rational
+rgbGamut :: RGBGamut
 rgbGamut = RGBGamut (RGB (cieChroma 0.64 0.33)
                          (cieChroma 0.30 0.60)
                          (cieChroma 0.15 0.06))

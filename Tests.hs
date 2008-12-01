@@ -90,8 +90,7 @@ instance (Arbitrary a) => Arbitrary (RGB a) where
   arbitrary = liftM3 RGB arbitrary arbitrary arbitrary
   coarbitrary (RGB r g b) = coarbitrary (r,g,b)
 
-instance (Fractional a, Arbitrary a) =>
-         Arbitrary (RGBGamut a) where
+instance Arbitrary RGBGamut where
   arbitrary = liftM2 RGBGamut arbitrary arbitrary
   coarbitrary (RGBGamut p w) = coarbitrary p . coarbitrary w
 
@@ -211,7 +210,7 @@ prop_readshowSRGB24 :: DColour -> Bool
 prop_readshowSRGB24 c =
   sRGB24show (sRGB24read (sRGB24show c)) == sRGB24show c
 
-prop_luminance_white :: RGBGamut Rational -> Property
+prop_luminance_white :: RGBGamut -> Property
 prop_luminance_white space =
   good space ==> luminance (rgbUsingSpace (linearRGBSpace space) 1 1 1) == 1
 

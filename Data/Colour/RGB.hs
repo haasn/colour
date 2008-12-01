@@ -43,16 +43,15 @@ uncurryRGB f (RGB r g b) = f r g b
 curryRGB :: (RGB a -> b) -> a -> a -> a -> b
 curryRGB f r g b = f (RGB r g b)
 
--- Should a always be Rational?
-data RGBGamut a = RGBGamut {primaries :: !(RGB (Chromaticity a))
-                           ,whitePoint   :: !(Chromaticity a)
-                           } deriving (Eq, Read, Show)
+data RGBGamut = RGBGamut {primaries :: !(RGB (Chromaticity Rational))
+                         ,whitePoint :: !(Chromaticity Rational)
+                         } deriving (Eq, Read, Show)
+
+mkRGBGamut :: (Real a, Real b) =>
+              RGB (Chromaticity a) -> Chromaticity b -> RGBGamut
+mkRGBGamut p w = RGBGamut (fmap chromaConvert p) (chromaConvert w)
 
 {- not for export -}
-
-gamutConvert :: (Fractional b, Real a) => RGBGamut a -> RGBGamut b
-gamutConvert (RGBGamut p w) =
-  RGBGamut (fmap chromaConvert p) (chromaConvert w)
 
 primaryMatrix :: (Fractional a) => (RGB (Chromaticity a)) -> [[a]]
 primaryMatrix p =
@@ -64,7 +63,7 @@ primaryMatrix p =
       (xg, yg, zg)
       (xb, yb, zb) = fmap chroma_coords p
 
-rgb2xyz :: (Fractional a) => RGBGamut a -> [[a]]
+rgb2xyz :: RGBGamut -> [[Rational]]
 rgb2xyz space =
   transpose (zipWith (map . (*)) as (transpose matrix))
  where
@@ -72,5 +71,5 @@ rgb2xyz space =
   matrix = primaryMatrix (primaries space)
   as = mult (inverse matrix) [xn/yn, 1, zn/yn]
 
-xyz2rgb :: (Fractional a) => RGBGamut a -> [[a]]
+xyz2rgb :: RGBGamut -> [[Rational]]
 xyz2rgb = inverse . rgb2xyz
