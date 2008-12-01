@@ -213,15 +213,15 @@ prop_readshowSRGB24 c =
 
 prop_luminance_white :: RGBGamut Rational -> Property
 prop_luminance_white space =
-  good space ==> luminance (rgbUsingSpace space 1 1 1) == 1
+  good space ==> luminance (rgbUsingSpace (linearRGBSpace space) 1 1 1) == 1
 
 prop_rgb :: Rational -> Rational -> Rational -> Bool
 prop_rgb r g b =
-  rgbUsingSpace rgbGamut r g b == rgb r g b
+  rgbUsingSpace (linearRGBSpace rgbGamut) r g b == rgb r g b
 
 prop_toRGB :: RColour -> Bool
 prop_toRGB c =
-  toRGBUsingSpace rgbGamut c == toRGB c
+  toRGBUsingSpace (linearRGBSpace rgbGamut) c == toRGB c
 
 tests = [("matrix-mult", test prop_matrixMult)
         ,("RGB-to-from", test prop_toFromRGB)

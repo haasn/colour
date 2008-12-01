@@ -36,7 +36,7 @@ import Numeric
 import Data.Colour
 import Data.Colour.Internal (quantize)
 import Data.Colour.SRGB.Linear
-import Data.Colour.RGBSpace
+import Data.Colour.RGBSpace (RGB(..), curryRGB, uncurryRGB)
 
 {- Non-linear colour space -}
 {- the sRGB transfer function approximates a gamma of about 2.2 -}

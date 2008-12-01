@@ -21,32 +21,82 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 -- |An RGB space is characterised by chromaticities for red, green, and
--- blue, and the chromaticity of the white point.
+-- blue, the chromaticity of the white point, and it's 'TransferFunction'.
 module Data.Colour.RGBSpace
- (RGB(..)
+ ( -- *RGB Tuple
+  RGB(..)
  ,uncurryRGB, curryRGB
 
+ -- *RGB Gamut
  ,RGBGamut(..)
+ ,inGamut
+ -- *RGB Space
+ ,TransferFunction(..)
+ ,linearTransferFunction, powerTransferFunction
+
+ ,RGBSpace(..)
+ ,linearRGBSpace
  ,rgbUsingSpace
  ,toRGBUsingSpace
  )
 where
 
+import Data.Monoid
 import Data.Colour
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix
 import Data.Colour.RGB
 import Data.Colour.SRGB.Linear
 
-rgbUsingSpace :: (Fractional a) => RGBGamut a -> a -> a -> a -> Colour a
-rgbUsingSpace space r g b = rgb r0 g0 b0
+inGamut :: (Ord a, Fractional a) => RGBGamut a -> Colour a -> Bool
+inGamut gamut c = r && g && b
  where
-  matrix = matrixMult (xyz2rgb rgbGamut) (rgb2xyz space)
+  test x = 0 <= x && x <= 1
+  RGB r g b = fmap test (toRGBUsingGamut gamut c)
+
+rgbUsingGamut :: (Fractional a) => RGBGamut a -> a -> a -> a -> Colour a
+rgbUsingGamut gamut r g b = rgb r0 g0 b0
+ where
+  matrix = matrixMult (xyz2rgb rgbGamut) (rgb2xyz gamut)
   [r0,g0,b0] = mult matrix [r,g,b]
 
-toRGBUsingSpace :: (Fractional a) => RGBGamut a -> Colour a -> RGB a
-toRGBUsingSpace space c = RGB r g b
+toRGBUsingGamut :: (Fractional a) => RGBGamut a -> Colour a -> RGB a
+toRGBUsingGamut gamut c = RGB r g b
  where
   RGB r0 g0 b0 = toRGB c
-  matrix = matrixMult (xyz2rgb space) (rgb2xyz rgbGamut)
+  matrix = matrixMult (xyz2rgb gamut) (rgb2xyz rgbGamut)
   [r,g,b] = mult matrix [r0,g0,b0]
+
+data TransferFunction a = TransferFunction
+                          { transfer :: a -> a
+                          , transferInverse :: a -> a
+                          , transferGamma :: a }
+
+linearTransferFunction :: (Num a) => TransferFunction a
+linearTransferFunction = TransferFunction id id 1
+
+powerTransferFunction :: (Floating a) => a -> TransferFunction a
+powerTransferFunction gamma =
+  TransferFunction (**gamma) (**(recip gamma)) gamma
+
+instance (Num a) => Monoid (TransferFunction a) where
+ mempty = linearTransferFunction
+ (TransferFunction f0 f1 f) `mappend` (TransferFunction g0 g1 g) =
+   (TransferFunction (f0 . g0) (g1 . f1) (f*g))
+
+data RGBSpace a = RGBSpace { gamut :: RGBGamut a,
+                             transferFunction :: TransferFunction a }
+
+linearRGBSpace :: (Num a) => RGBGamut a -> RGBSpace a
+linearRGBSpace gamut = RGBSpace gamut mempty
+
+rgbUsingSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
+rgbUsingSpace space = 
+  curryRGB (uncurryRGB (rgbUsingGamut (gamut space)) . fmap tinv)
+ where
+  tinv = transferInverse (transferFunction space)
+
+toRGBUsingSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
+toRGBUsingSpace space c = fmap t (toRGBUsingGamut (gamut space) c)
+ where
+  t = transfer (transferFunction space)
