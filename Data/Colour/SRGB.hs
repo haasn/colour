@@ -27,7 +27,8 @@ module Data.Colour.SRGB
 
  ,sRGB24shows, sRGB24show
  ,sRGB24reads, sRGB24read
-  --,transferFunction, invTransferFunction -- should these be exported?
+
+ ,sRGBSpace
  )
 where
 
@@ -36,10 +37,10 @@ import Numeric
 import Data.Colour
 import Data.Colour.Internal (quantize)
 import Data.Colour.SRGB.Linear
-import Data.Colour.RGBSpace (RGB(..), curryRGB, uncurryRGB)
+import Data.Colour.RGBSpace hiding (transferFunction)
 
 {- Non-linear colour space -}
-{- the sRGB transfer function approximates a gamma of about 2.2 -}
+{- the sRGB transfer function approximates a gamma of about 1/2.2 -}
 transferFunction lin | lin == 1         = 1
                      | lin <= 0.0031308 = 12.92*lin
                      | otherwise        = (1 + a)*lin**(1/2.4) - a
@@ -128,3 +129,9 @@ sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
              | otherwise = fst (head rx)
  where
   rx = sRGB24reads x
+
+-- |The sRGB colour space
+sRGBSpace :: (Ord a, Floating a) => RGBSpace a
+sRGBSpace = RGBSpace rgbGamut transfer
+ where
+  transfer = TransferFunction transferFunction invTransferFunction (recip 2.2)
