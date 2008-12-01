@@ -90,12 +90,12 @@ instance (Fractional a, Read a) => Read (Colour a) where
 linearConstructorName = "Data.Colour.SRGB.Linear.rgb"
 
 instance (Fractional a) => Show (AlphaColour a) where
-  showsPrec d ac = showParen (d > infix_prec) showStr
+  showsPrec d ac | a == 0 = showString "transparent"
+                 | otherwise = showParen (d > infix_prec) showStr
    where
-    showStr | a == 0 = showString "transparent"
-            | otherwise = showsPrec (infix_prec+1) c
-                        . showString " `withOpacity` "
-                        . showsPrec (infix_prec+1) a
+    showStr = showsPrec (infix_prec+1) c
+            . showString " `withOpacity` "
+            . showsPrec (infix_prec+1) a
     a = alphaChannel ac
     c = colourChannel ac
 

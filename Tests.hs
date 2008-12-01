@@ -109,6 +109,12 @@ prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
   v :: [Rational]
   v = [x,y,z]
 
+newtype Depth = Depth Int deriving Show
+
+instance Arbitrary Depth where
+  arbitrary = liftM Depth $ choose (0,11)
+  coarbitrary (Depth x) = coarbitrary x
+
 prop_toFromRGB :: RColour -> Bool
 prop_toFromRGB c = uncurryRGB rgb (toRGB c) == c
 
@@ -192,11 +198,11 @@ prop_atopTransparent c = c `atop` transparent == transparent
 prop_atopAlpha :: RAlphaColour -> RAlphaColour -> Bool
 prop_atopAlpha c0 c1 = alphaChannel (c0 `atop` c1) == alphaChannel c1
 
-prop_showReadC :: RColour -> Bool
-prop_showReadC c = read (show c) == c
+prop_showReadC :: Depth -> RColour -> Bool
+prop_showReadC (Depth d) c = readsPrec d (showsPrec d c "") == [(c,"")]
 
-prop_showReadAC :: RAlphaColour -> Bool
-prop_showReadAC c = read (show c) == c
+prop_showReadAC :: Depth -> RAlphaColour -> Bool
+prop_showReadAC (Depth d) c = readsPrec d (showsPrec d c "") == [(c,"")]
 
 prop_sRGB24showlength :: DColour -> Bool
 prop_sRGB24showlength c = length (sRGB24show c) == 7
