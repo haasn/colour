@@ -28,26 +28,25 @@ module Data.Colour.SRGB.Linear
  )
 where
 
-import Data.Colour.Internal (Colour(RGB))
+import qualified Data.Colour.Internal as Internal(Colour(RGB))
+import Data.Colour.Internal (Colour)
 import Data.Colour.Chan
-import qualified Data.Colour.RGB (RGB(RGB))
+import Data.Colour.RGB
 import Data.Colour.CIE.Chromaticity
-import Data.Colour.CIE.Illuminant
-import Data.Colour.RGB (RGBSpace(..))
+import Data.Colour.CIE.Illuminant (d65)
 
 -- |Constructs a 'Colour' from RGB values using the /linear/ RGB colour
 -- with the same gamut as sRGB.
 rgb :: Fractional a => a -> a -> a -> Colour a
-rgb r g b = RGB (Chan r) (Chan g) (Chan b)
+rgb r g b = Internal.RGB (Chan r) (Chan g) (Chan b)
 
 -- |Return RGB values using the /linear/ RGB colour with the same gamut
 -- as sRGB.
-toRGB :: Fractional a => Colour a -> Data.Colour.RGB.RGB a
-toRGB (RGB (Chan r) (Chan g) (Chan b)) = Data.Colour.RGB.RGB r g b
+toRGB :: Fractional a => Colour a -> RGB a
+toRGB (Internal.RGB (Chan r) (Chan g) (Chan b)) = RGB r g b
 
 rgbSpace :: Fractional a => RGBSpace a
-rgbSpace = RGBSpace (Data.Colour.RGB.RGB
-                    (cieChroma 0.64 0.33)
-                    (cieChroma 0.30 0.60)
-                    (cieChroma 0.15 0.06))
+rgbSpace = RGBSpace (RGB (cieChroma 0.64 0.33)
+                         (cieChroma 0.30 0.60)
+                         (cieChroma 0.15 0.06))
                     d65

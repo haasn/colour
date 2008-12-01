@@ -24,7 +24,7 @@ module Data.Colour.Chan where
 {- For internal use only:
    Not to be exported from the package -}
 
-import qualified Data.List
+import qualified Data.List (sum)
 
 newtype Chan p a = Chan a deriving (Eq)
 

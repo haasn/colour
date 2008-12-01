@@ -23,8 +23,6 @@ THE SOFTWARE.
 module Data.Colour.Internal where
 
 import Data.List
-import qualified Data.Colour.RGB
-import Data.Colour.RGB (RGBSpace(..))
 import qualified Data.Colour.Chan as Chan
 import Data.Colour.Chan (Chan(Chan))
 import Data.Monoid
