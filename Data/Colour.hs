@@ -68,7 +68,7 @@ import Data.Colour.CIE.Chromaticity (app_prec, infix_prec)
 instance (Fractional a) => Show (Colour a) where
   showsPrec d c = showParen (d > app_prec) showStr
    where
-    showStr = showString linearConstructorName
+    showStr = showString linearConstructorQualifiedName
             . showString " " . (showsPrec (app_prec+1) r)
             . showString " "       . (showsPrec (app_prec+1) g)
             . showString " "       . (showsPrec (app_prec+1) b)
@@ -78,7 +78,8 @@ instance (Fractional a, Read a) => Read (Colour a) where
   readsPrec d r = readParen (d > app_prec)
                   (\r -> [(Data.Colour.SRGB.Linear.rgb r0 g0 b0,t)
                          |(name,s) <- mylex r
-                         ,linearConstructorName == name
+                         ,name `elem` [linearConstructorName
+                                      ,linearConstructorQualifiedName]
                          ,(r0,s0) <- readsPrec (app_prec+1) s
                          ,(g0,s1) <- readsPrec (app_prec+1) s0
                          ,(b0,t)  <- readsPrec (app_prec+1) s1]) r
@@ -87,7 +88,8 @@ instance (Fractional a, Read a) => Read (Colour a) where
           . span (\c -> isAlphaNum c || c `elem` "._'")
           . dropWhile isSpace
 
-linearConstructorName = "Data.Colour.SRGB.Linear.rgb"
+linearConstructorQualifiedName = "Data.Colour.SRGB.Linear.rgb"
+linearConstructorName = "rgb"
 
 instance (Fractional a) => Show (AlphaColour a) where
   showsPrec d ac | a == 0 = showString "transparent"
