@@ -47,7 +47,7 @@ toRGB (Internal.RGB (Chan r) (Chan g) (Chan b)) = RGB r g b
 
 -- |This is the gamut for the sRGB colour space.
 rgbGamut :: RGBGamut
-rgbGamut = RGBGamut (RGB (cieChroma 0.64 0.33)
-                         (cieChroma 0.30 0.60)
-                         (cieChroma 0.15 0.06))
+rgbGamut = RGBGamut (RGB (mkChromaticity 0.64 0.33)
+                         (mkChromaticity 0.30 0.60)
+                         (mkChromaticity 0.15 0.06))
                     d65

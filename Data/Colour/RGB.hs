@@ -82,13 +82,13 @@ primaryMatrix p =
  where
   RGB (xr, yr, zr)
       (xg, yg, zg)
-      (xb, yb, zb) = fmap chroma_coords p
+      (xb, yb, zb) = fmap chromaCoords p
 
 rgb2xyz :: RGBGamut -> [[Rational]]
 rgb2xyz space =
   transpose (zipWith (map . (*)) as (transpose matrix))
  where
-  (xn, yn, zn) = chroma_coords (whitePoint space)
+  (xn, yn, zn) = chromaCoords (whitePoint space)
   matrix = primaryMatrix (primaries space)
   as = mult (inverse matrix) [xn/yn, 1, zn/yn]
 

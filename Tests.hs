@@ -81,10 +81,10 @@ instance (Real a, Fractional a, Arbitrary a) =>
 
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (Chromaticity a) where
-  arbitrary = liftM2 cieChroma arbitrary arbitrary
+  arbitrary = liftM2 mkChromaticity arbitrary arbitrary
   coarbitrary c = coarbitrary x . coarbitrary y
    where
-    (x,y,_) = chroma_coords c
+    (x,y,_) = chromaCoords c
 
 instance (Arbitrary a) => Arbitrary (RGB a) where
   arbitrary = liftM3 RGB arbitrary arbitrary arbitrary
@@ -97,7 +97,7 @@ instance Arbitrary RGBGamut where
 good (RGBGamut p w) = p1 && p2
  where
   p1 = 0 /= determinant (primaryMatrix p)
-  p2 = 0 /= let (x,y,z) = chroma_coords w in y
+  p2 = 0 /= let (x,y,z) = chromaCoords w in y
 
 prop_matrixMult (a1,b1,c1) (d1,e1,f1) (g1,h1,i1)
                 (a2,b2,c2) (d2,e2,f2) (g2,h2,i2)

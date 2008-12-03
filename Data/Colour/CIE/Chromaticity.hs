@@ -24,15 +24,30 @@ module Data.Colour.CIE.Chromaticity where
 
 data Chromaticity a = Chroma !a !a deriving (Eq)
 
--- |Returns the CIE little /x/, little /y/, little /z/ coordinates
--- for the 2&#176; standard (colourimetric) observer.
-chroma_coords :: (Fractional a) => Chromaticity a -> (a, a, a)
-chroma_coords (Chroma x y) = (x, y, 1 - x - y)
-
 -- |Constructs 'Chromaticity' from the CIE little /x/, little /y/
 -- coordinates for the 2&#176; standard (colourimetric) observer.
-cieChroma :: (Fractional a) => a -> a -> Chromaticity a
-cieChroma = Chroma
+mkChromaticity :: (Fractional a) => a -> a -> Chromaticity a
+mkChromaticity = Chroma
+
+-- |Returns the CIE little /x/, little /y/, little /z/ coordinates
+-- for the 2&#176; standard (colourimetric) observer.
+chromaCoords :: (Fractional a) => Chromaticity a -> (a, a, a)
+chromaCoords (Chroma x y) = (x, y, 1 - x - y)
+
+-- |Returns the CIE little /x/ coordinate
+-- for the 2&#176; standard (colourimetric) observer.
+chromaX :: (Fractional a) => Chromaticity a -> a
+chromaX (Chroma x _y) = x
+
+-- |Returns the CIE little /y/ coordinate
+-- for the 2&#176; standard (colourimetric) observer.
+chromaY :: (Fractional a) => Chromaticity a -> a
+chromaY (Chroma _x y) = y
+
+-- |Returns the CIE little /z/ coordinate
+-- for the 2&#176; standard (colourimetric) observer.
+chromaZ :: (Fractional a) => Chromaticity a -> a
+chromaZ (Chroma x y) = 1 - x - y
 
 chromaConvert :: (Fractional b, Real a) => Chromaticity a -> Chromaticity b
 chromaConvert (Chroma x y) = Chroma (realToFrac x) (realToFrac y)
@@ -40,14 +55,14 @@ chromaConvert (Chroma x y) = Chroma (realToFrac x) (realToFrac y)
 instance (Fractional a) => Show (Chromaticity a) where
   showsPrec d c = showParen (d > app_prec) showStr
    where
-    showStr = showString "cieChroma " . (showsPrec (app_prec+1) x)
+    showStr = showString "mkChromaticity " . (showsPrec (app_prec+1) x)
             . showString " "          . (showsPrec (app_prec+1) y)
-    (x,y,z) = chroma_coords c
+    (x,y,z) = chromaCoords c
 
 instance (Fractional a, Read a) => Read (Chromaticity a) where
   readsPrec d r = readParen (d > app_prec)
-                  (\r -> [(cieChroma x y,t)
-                         |("cieChroma",s) <- lex r
+                  (\r -> [(mkChromaticity x y,t)
+                         |("mkChromaticity",s) <- lex r
                          ,(x,s0) <- readsPrec (app_prec+1) s
                          ,(y,t) <- readsPrec (app_prec+1) s0]) r
 

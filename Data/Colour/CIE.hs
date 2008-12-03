@@ -26,7 +26,10 @@ module Data.Colour.CIE
  (cieXYZ, toCIEXYZ, luminance
 
  ,Chromaticity
- ,cieChroma, chroma_coords, chromaColour
+ ,mkChromaticity, chromaCoords
+ ,chromaX, chromaY, chromaZ
+ ,chromaConvert
+ ,chromaColour
 
  ,lightness, cieLab, cieLuv
  )
@@ -76,7 +79,7 @@ instance AffineSpace Chromaticity where
 chromaColour :: (Fractional a) => Chromaticity a -> a -> Colour a
 chromaColour ch y = cieXYZ (s*ch_x) y (s*ch_z)
  where
-  (ch_x, ch_y, ch_z) = chroma_coords ch
+  (ch_x, ch_y, ch_z) = chromaCoords ch
   s = y/ch_y
 
 -- |Returns the lightness of a colour, which is a perceptually uniform
