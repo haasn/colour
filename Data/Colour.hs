@@ -75,8 +75,8 @@ instance (Fractional a) => Show (Colour a) where
    where
     showStr = showString linearConstructorQualifiedName
             . showString " " . (showsPrec (app_prec+1) r)
-            . showString " "       . (showsPrec (app_prec+1) g)
-            . showString " "       . (showsPrec (app_prec+1) b)
+            . showString " " . (showsPrec (app_prec+1) g)
+            . showString " " . (showsPrec (app_prec+1) b)
     Data.Colour.RGB.RGB r g b = Data.Colour.SRGB.Linear.toRGB c
 
 instance (Fractional a, Read a) => Read (Colour a) where
