@@ -35,6 +35,7 @@ module Data.Colour.RGBSpace
  -- *RGB Space
  ,TransferFunction(..)
  ,linearTransferFunction, powerTransferFunction
+ ,inverseTransferFunction
 
  ,RGBSpace()
  ,mkRGBSpace ,gamut, transferFunction
@@ -102,6 +103,11 @@ linearTransferFunction = TransferFunction id id 1
 powerTransferFunction :: (Floating a) => a -> TransferFunction a
 powerTransferFunction gamma =
   TransferFunction (**gamma) (**(recip gamma)) gamma
+
+-- |This reverses a 'TransferFunction'.
+inverseTransferFunction :: (Fractional a) => TransferFunction a -> TransferFunction a
+inverseTransferFunction (TransferFunction for rev g) =
+  TransferFunction rev for (recip g)
 
 instance (Num a) => Monoid (TransferFunction a) where
  mempty = linearTransferFunction
