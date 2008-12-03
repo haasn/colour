@@ -25,7 +25,7 @@ THE SOFTWARE.
 module Data.Colour.SRGB.Linear 
  (Colour, RGB(..)
  ,rgb, toRGB
- ,rgbGamut
+ ,sRGBGamut
  )
 where
 
@@ -47,8 +47,8 @@ toRGB :: Fractional a => Colour a -> RGB a
 toRGB (Internal.RGB (Chan r) (Chan g) (Chan b)) = RGB r g b
 
 -- |This is the gamut for the sRGB colour space.
-rgbGamut :: RGBGamut
-rgbGamut = RGBGamut (RGB (mkChromaticity 0.64 0.33)
+sRGBGamut :: RGBGamut
+sRGBGamut = RGBGamut (RGB (mkChromaticity 0.64 0.33)
                          (mkChromaticity 0.30 0.60)
                          (mkChromaticity 0.15 0.06))
                     d65

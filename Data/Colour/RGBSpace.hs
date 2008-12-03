@@ -65,14 +65,14 @@ rtf = map (map realToFrac)
 rgbUsingGamut :: (Fractional a) => RGBGamut -> a -> a -> a -> Colour a
 rgbUsingGamut gamut r g b = rgb r0 g0 b0
  where
-  matrix = rtf $ matrixMult (xyz2rgb rgbGamut) (rgb2xyz gamut)
+  matrix = rtf $ matrixMult (xyz2rgb sRGBGamut) (rgb2xyz gamut)
   [r0,g0,b0] = mult matrix [r,g,b]
 
 toRGBUsingGamut :: (Fractional a) => RGBGamut -> Colour a -> RGB a
 toRGBUsingGamut gamut c = RGB r g b
  where
   RGB r0 g0 b0 = toRGB c
-  matrix = rtf $ matrixMult (xyz2rgb gamut) (rgb2xyz rgbGamut)
+  matrix = rtf $ matrixMult (xyz2rgb gamut) (rgb2xyz sRGBGamut)
   [r,g,b] = mult matrix [r0,g0,b0]
 
 -- |A 'transfer' function is a function that typically translates linear

@@ -216,11 +216,11 @@ prop_luminance_white space =
 
 prop_rgb :: Rational -> Rational -> Rational -> Bool
 prop_rgb r g b =
-  rgbUsingSpace (linearRGBSpace rgbGamut) r g b == rgb r g b
+  rgbUsingSpace (linearRGBSpace sRGBGamut) r g b == rgb r g b
 
 prop_toRGB :: RColour -> Bool
 prop_toRGB c =
-  toRGBUsingSpace (linearRGBSpace rgbGamut) c == toRGB c
+  toRGBUsingSpace (linearRGBSpace sRGBGamut) c == toRGB c
 
 prop_sRGB :: Double -> Double -> Double -> Bool
 prop_sRGB r g b = rgbUsingSpace sRGBSpace r g b == sRGB r g b
