@@ -132,6 +132,6 @@ sRGB24read x | length rx /= 1 || not (null (snd (head rx))) =
 
 -- |The sRGB colour space
 sRGBSpace :: (Ord a, Floating a) => RGBSpace a
-sRGBSpace = RGBSpace rgbGamut transfer
+sRGBSpace = mkRGBSpace rgbGamut transfer
  where
   transfer = TransferFunction transferFunction invTransferFunction (recip 2.2)

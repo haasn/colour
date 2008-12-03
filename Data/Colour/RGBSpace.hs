@@ -35,7 +35,8 @@ module Data.Colour.RGBSpace
  ,TransferFunction(..)
  ,linearTransferFunction, powerTransferFunction
 
- ,RGBSpace(..)
+ ,RGBSpace()
+ ,mkRGBSpace ,gamut, transferFunction
  ,linearRGBSpace
  ,rgbUsingSpace
  ,toRGBUsingSpace
@@ -112,6 +113,12 @@ instance (Num a) => Monoid (TransferFunction a) where
 -- produce non-linear 'RGB' values.
 data RGBSpace a = RGBSpace { gamut :: RGBGamut,
                              transferFunction :: TransferFunction a }
+
+-- |An RGBSpace is specified by an 'RGBGamut' and a 'TransferFunction'.
+mkRGBSpace :: RGBGamut
+           -> TransferFunction a
+           -> RGBSpace a
+mkRGBSpace = RGBSpace
 
 -- |Produce a linear colour space from an 'RGBGamut'.
 linearRGBSpace :: (Num a) => RGBGamut -> RGBSpace a
