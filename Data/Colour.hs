@@ -34,6 +34,11 @@ THE SOFTWARE.
 --
 -- - "Data.Colour.CIE"
 --
+-- Colours can be specified in a generic 'Data.Colour.RGBSpace.RGBSpace'
+-- by using
+--
+-- - "Data.Colour.RGBSpace"
+
 
 --TODO
 -- - "Data.Colour.HDTV"

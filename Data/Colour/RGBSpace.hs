@@ -48,6 +48,7 @@ import Data.Colour.Matrix
 import Data.Colour.RGB
 import Data.Colour.SRGB.Linear
 
+-- |Returns 'True' if the given colour lies inside the given gamut.
 inGamut :: (Ord b, Fractional b) => RGBGamut -> Colour b -> Bool
 inGamut gamut c = r && g && b
  where
@@ -70,14 +71,31 @@ toRGBUsingGamut gamut c = RGB r g b
   matrix = rtf $ matrixMult (xyz2rgb gamut) (rgb2xyz rgbGamut)
   [r,g,b] = mult matrix [r0,g0,b0]
 
+-- |A 'transfer' function is a function that typically translates linear
+-- colour space coordinates into non-linear coordinates.
+-- The 'transferInverse' function reverses this by translating non-linear
+-- colour space coordinates into linear coordinates.
+-- It is required that
+--
+-- > transfer . transferInverse === id === transferInverse . inverse
+--
+-- (or that this law holds up to floating point rounding errors).
+--
+-- We also require that 'transfer' is approximately @(**transferGamma)@
+-- (and hence 'transferInverse' is approximately
+-- @(**(recip transferGamma))@).
+-- The value 'transferGamma' is for informational purposes only, so there
+-- is no bound on how good this approximation needs to be.
 data TransferFunction a = TransferFunction
                           { transfer :: a -> a
                           , transferInverse :: a -> a
                           , transferGamma :: a }
 
+-- |This is the identity 'TransferFunction'.
 linearTransferFunction :: (Num a) => TransferFunction a
 linearTransferFunction = TransferFunction id id 1
 
+-- |This is the @(**gamma)@ 'TransferFunction'.
 powerTransferFunction :: (Floating a) => a -> TransferFunction a
 powerTransferFunction gamma =
   TransferFunction (**gamma) (**(recip gamma)) gamma
@@ -87,18 +105,26 @@ instance (Num a) => Monoid (TransferFunction a) where
  (TransferFunction f0 f1 f) `mappend` (TransferFunction g0 g1 g) =
    (TransferFunction (f0 . g0) (g1 . f1) (f*g))
 
+-- |An 'RGBSpace' is a colour coordinate system for colours laying
+-- 'inGamut' of 'gamut'.
+-- Linear coordinates are passed through a 'transferFunction' to
+-- produce non-linear 'RGB' values.
 data RGBSpace a = RGBSpace { gamut :: RGBGamut,
                              transferFunction :: TransferFunction a }
 
+-- |Produce a linear colour space from an 'RGBGamut'.
 linearRGBSpace :: (Num a) => RGBGamut -> RGBSpace a
 linearRGBSpace gamut = RGBSpace gamut mempty
 
+-- |Create a 'Colour' from red, green, and blue coordinates given in a
+-- general 'RGBSpace'.
 rgbUsingSpace :: (Fractional a) => RGBSpace a -> a -> a -> a -> Colour a
 rgbUsingSpace space = 
   curryRGB (uncurryRGB (rgbUsingGamut (gamut space)) . fmap tinv)
  where
   tinv = transferInverse (transferFunction space)
 
+-- |Return the coordinates of a given 'Colour' for a general 'RGBSpace'.
 toRGBUsingSpace :: (Fractional a) => RGBSpace a -> Colour a -> RGB a
 toRGBUsingSpace space c = fmap t (toRGBUsingGamut (gamut space) c)
  where
