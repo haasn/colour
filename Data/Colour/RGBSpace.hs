@@ -28,7 +28,8 @@ module Data.Colour.RGBSpace
  ,uncurryRGB, curryRGB
 
  -- *RGB Gamut
- ,RGBGamut(..)
+ ,RGBGamut
+ ,mkRGBGamut, primaries, whitePoint
  ,inGamut
  -- *RGB Space
  ,TransferFunction(..)

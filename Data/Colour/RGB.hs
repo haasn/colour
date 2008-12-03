@@ -45,11 +45,26 @@ curryRGB f r g b = f (RGB r g b)
 
 data RGBGamut = RGBGamut {primaries :: !(RGB (Chromaticity Rational))
                          ,whitePoint :: !(Chromaticity Rational)
-                         } deriving (Eq, Read, Show)
+                         } deriving (Eq)
 
-mkRGBGamut :: (Real a, Real b) =>
-              RGB (Chromaticity a) -> Chromaticity b -> RGBGamut
-mkRGBGamut p w = RGBGamut (fmap chromaConvert p) (chromaConvert w)
+instance Show RGBGamut where
+  showsPrec d gamut = showParen (d > app_prec) showStr
+   where
+    showStr = showString "mkRGBGamut"
+            . showString " " . (showsPrec (app_prec+1) (primaries gamut))
+            . showString " " . (showsPrec (app_prec+1) (whitePoint gamut))
+
+instance Read RGBGamut where
+  readsPrec d r = readParen (d > app_prec)
+                  (\r -> [(mkRGBGamut p w,t)
+                         |("mkRGBGamut",s) <- lex r
+                         ,(p,s0) <- readsPrec (app_prec+1) s
+                         ,(w,t)  <- readsPrec (app_prec+1) s0]) r
+
+mkRGBGamut :: RGB (Chromaticity Rational) -- ^ The three primaries
+           -> Chromaticity Rational       -- ^ The white point
+           -> RGBGamut
+mkRGBGamut = RGBGamut
 
 {- not for export -}
 
