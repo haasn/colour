@@ -22,7 +22,8 @@ THE SOFTWARE.
 -}
 -- |Specifies 'Colour's in accordance with the sRGB standard.
 module Data.Colour.SRGB
- (sRGB24, sRGBBounded, sRGB
+ (Colour, RGB(..)
+ ,sRGB24, sRGBBounded, sRGB
  ,toSRGB24, toSRGBBounded, toSRGB
 
  ,sRGB24shows, sRGB24show
@@ -34,7 +35,6 @@ where
 
 import Data.Word
 import Numeric
-import Data.Colour
 import Data.Colour.Internal (quantize)
 import Data.Colour.SRGB.Linear
 import Data.Colour.RGBSpace hiding (transferFunction)

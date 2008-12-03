@@ -23,7 +23,8 @@ THE SOFTWARE.
 -- |Provides a /linear/ colour space with the same gamut as
 -- "Data.Colour.SRGB".
 module Data.Colour.SRGB.Linear 
- (rgb, toRGB
+ (Colour, RGB(..)
+ ,rgb, toRGB
  ,rgbGamut
  )
 where

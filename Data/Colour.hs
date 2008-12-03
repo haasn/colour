@@ -66,7 +66,6 @@ where
 
 import Data.Char
 import Data.Colour.Internal
-import qualified Data.Colour.RGB
 import qualified Data.Colour.SRGB.Linear
 import Data.Colour.CIE.Chromaticity (app_prec, infix_prec)
 
@@ -77,7 +76,7 @@ instance (Fractional a) => Show (Colour a) where
             . showString " " . (showsPrec (app_prec+1) r)
             . showString " " . (showsPrec (app_prec+1) g)
             . showString " " . (showsPrec (app_prec+1) b)
-    Data.Colour.RGB.RGB r g b = Data.Colour.SRGB.Linear.toRGB c
+    Data.Colour.SRGB.Linear.RGB r g b = Data.Colour.SRGB.Linear.toRGB c
 
 instance (Fractional a, Read a) => Read (Colour a) where
   readsPrec d r = readParen (d > app_prec)

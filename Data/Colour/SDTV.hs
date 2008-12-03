@@ -26,14 +26,14 @@ THE SOFTWARE.
 --
 -- For high definition television (HDTV) see "Data.Colour.HDTV".
 module Data.Colour.SDTV
- (luma
+ (Colour
+ ,luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
  )
 where
 
 import Data.Word
-import Data.Colour
 import Data.Colour.RGBSpace
 import qualified Data.Colour.Luma as L
 

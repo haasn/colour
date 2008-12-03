@@ -24,8 +24,9 @@ THE SOFTWARE.
 -- blue, the 'Chromaticity' of the white point, and it's
 -- 'TransferFunction'.
 module Data.Colour.RGBSpace
- ( -- *RGB Tuple
-  RGB(..)
+ (Colour
+  -- *RGB Tuple
+ ,RGB(..)
  ,uncurryRGB, curryRGB
 
  -- *RGB Gamut
@@ -46,7 +47,6 @@ module Data.Colour.RGBSpace
 where
 
 import Data.Monoid
-import Data.Colour
 import Data.Colour.CIE.Chromaticity
 import Data.Colour.Matrix
 import Data.Colour.RGB

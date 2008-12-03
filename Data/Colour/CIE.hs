@@ -23,7 +23,8 @@ THE SOFTWARE.
 -- |Colour operations defined by the International Commission on 
 -- Illumination (CIE).
 module Data.Colour.CIE
- (cieXYZ, toCIEXYZ, luminance
+ (Colour
+ ,cieXYZ, toCIEXYZ, luminance
 
  ,Chromaticity
  ,mkChromaticity, chromaCoords

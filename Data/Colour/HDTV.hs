@@ -31,7 +31,8 @@ THE SOFTWARE.
 -- primaries used in sRGB.
 -- See also "Data.Colour.SRGB".
 module Data.Colour.HDTV
- (luma
+ (Colour
+ ,luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
  )
@@ -40,7 +41,6 @@ where
 import Data.Word
 import Data.Colour.Internal
 import Data.Colour.SRGB
-import Data.Colour.RGBSpace (RGB)
 import qualified Data.Colour.Luma as L
 
 {- rec 709 luma -}
