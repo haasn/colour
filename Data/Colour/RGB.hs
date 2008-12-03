@@ -43,6 +43,10 @@ uncurryRGB f (RGB r g b) = f r g b
 curryRGB :: (RGB a -> b) -> a -> a -> a -> b
 curryRGB f r g b = f (RGB r g b)
 
+-- |An 'RGBGamut' is a 3-D colour ```cube''' that contains all the colours
+-- that can be displayed by a RGB device.
+-- The ```cube''' is normalized so that white has
+-- 'Data.Colour.CIE.luminance' 1.
 data RGBGamut = RGBGamut {primaries :: !(RGB (Chromaticity Rational))
                          ,whitePoint :: !(Chromaticity Rational)
                          } deriving (Eq)
@@ -61,6 +65,8 @@ instance Read RGBGamut where
                          ,(p,s0) <- readsPrec (app_prec+1) s
                          ,(w,t)  <- readsPrec (app_prec+1) s0]) r
 
+-- |An RGB gamut is specified by three primary colours (red, green, and 
+-- blue) and a white point (often 'Data.Colour.CIE.Illuminant.d65').
 mkRGBGamut :: RGB (Chromaticity Rational) -- ^ The three primaries
            -> Chromaticity Rational       -- ^ The white point
            -> RGBGamut

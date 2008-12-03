@@ -20,8 +20,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
--- |An RGB space is characterised by chromaticities for red, green, and
--- blue, the chromaticity of the white point, and it's 'TransferFunction'.
+-- |An 'RGBSpace' is characterised by 'Chromaticity' for red, green, and
+-- blue, the 'Chromaticity' of the white point, and it's
+-- 'TransferFunction'.
 module Data.Colour.RGBSpace
  ( -- *RGB Tuple
   RGB(..)
@@ -51,7 +52,7 @@ import Data.Colour.RGB
 import Data.Colour.SRGB.Linear
 
 -- |Returns 'True' if the given colour lies inside the given gamut.
-inGamut :: (Ord b, Fractional b) => RGBGamut -> Colour b -> Bool
+inGamut :: (Ord a, Fractional a) => RGBGamut -> Colour a -> Bool
 inGamut gamut c = r && g && b
  where
   test x = 0 <= x && x <= 1
