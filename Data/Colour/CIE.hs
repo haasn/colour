@@ -32,7 +32,7 @@ module Data.Colour.CIE
  ,chromaConvert
  ,chromaColour
 
- ,lightness, cieLab, cieLuv
+ --,lightness, cieLab, cieLuv
  )
 where
 
