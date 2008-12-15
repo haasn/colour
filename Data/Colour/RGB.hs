@@ -43,9 +43,9 @@ uncurryRGB f (RGB r g b) = f r g b
 curryRGB :: (RGB a -> b) -> a -> a -> a -> b
 curryRGB f r g b = f (RGB r g b)
 
--- |An 'RGBGamut' is a 3-D colour ```cube''' that contains all the colours
--- that can be displayed by a RGB device.
--- The ```cube''' is normalized so that white has
+-- |An 'RGBGamut' is a 3-D colour &#8220;cube&#8221; that contains all the
+-- colours that can be displayed by a RGB device.
+-- The &#8220;cube&#8221; is normalized so that white has
 -- 'Data.Colour.CIE.luminance' 1.
 data RGBGamut = RGBGamut {primaries :: !(RGB (Chromaticity Rational))
                          ,whitePoint :: !(Chromaticity Rational)

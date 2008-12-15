@@ -49,6 +49,7 @@ chromaY (Chroma _x y) = y
 chromaZ :: (Fractional a) => Chromaticity a -> a
 chromaZ (Chroma x y) = 1 - x - y
 
+-- |Change the type used to represent the chromaticity coordinates.
 chromaConvert :: (Fractional b, Real a) => Chromaticity a -> Chromaticity b
 chromaConvert (Chroma x y) = Chroma (realToFrac x) (realToFrac y)
 

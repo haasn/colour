@@ -196,7 +196,7 @@ alphaChannel (RGBA _ (Chan a)) = a
 -- @colourChannel transparent@ is undefined and may result in @nan@ or an
 -- error.
 -- Its use is discouraged.
--- If you are desparate, use
+-- If you are desperate, use
 --
 -- >darken (recip (alphaChannel c)) (c `over` black)
 colourChannel :: (Fractional a) => AlphaColour a -> Colour a

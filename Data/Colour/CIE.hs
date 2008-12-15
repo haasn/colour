@@ -77,7 +77,10 @@ instance AffineSpace Chromaticity where
    s `chromaScale` (Chroma x y) = Chroma (s*x) (s*y)
 
 -- |Constructs a colour from the given 'Chromaticity' and 'luminance'.
-chromaColour :: (Fractional a) => Chromaticity a -> a -> Colour a
+chromaColour :: (Fractional a) =>
+                Chromaticity a
+             -> a              -- ^ 'luminance'
+             -> Colour a
 chromaColour ch y = cieXYZ (s*ch_x) y (s*ch_z)
  where
   (ch_x, ch_y, ch_z) = chromaCoords ch

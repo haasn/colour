@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
--- |An 'RGBSpace' is characterised by 'Chromaticity' for red, green, and
+-- |An 'RGBSpace' is characterized by 'Chromaticity' for red, green, and
 -- blue, the 'Chromaticity' of the white point, and it's
 -- 'TransferFunction'.
 module Data.Colour.RGBSpace
