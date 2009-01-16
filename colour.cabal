@@ -23,6 +23,8 @@ Library
                      Data.Colour.CIE
                      Data.Colour.CIE.Illuminant
                      Data.Colour.RGBSpace
+                     Data.Colour.RGBSpace.HSL
+                     Data.Colour.RGBSpace.HSV
                      Data.Colour.Names
   Other-Modules:     Data.Colour.Internal
                      Data.Colour.Chan

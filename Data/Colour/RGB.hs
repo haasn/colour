@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008,2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -94,3 +94,25 @@ rgb2xyz space =
 
 xyz2rgb :: RGBGamut -> [[Rational]]
 xyz2rgb = inverse . rgb2xyz
+
+hslsv :: (Fractional a, Ord a) => RGB a -> (a,a,a,a,a)
+hslsv (RGB r g b) | mx == mn  = (0,0,mx,0 ,mx)
+                  | otherwise = (h,s,l ,s0,mx)
+ where
+  mx = maximum [r,g,b]
+  mn = minimum [r,g,b]
+  l = (mx+mn)/2
+  s | l <= 0.5 = (mx-mn)/(mx+mn)
+    | otherwise = (mx-mn)/(2-(mx+mn))
+  s0 = (mx-mn)/mx
+  -- hue calcuation
+  [x,y,z] = take 3 $ dropWhile (/=mx) [r,g,b,r,g]
+  Just o = elemIndex mx [r,g,b]
+  h0 = 60*(y-z)/(mx-mn) + 120*(fromIntegral o)
+  h | h0 < 0 = h0 + 360
+    | otherwise = h0
+
+hue :: (Fractional a, Ord a) => RGB a -> a
+hue rgb = h
+ where
+  (h,_,_,s,v) = hslsv rgb
