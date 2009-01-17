@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008,2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +25,7 @@ module Data.Colour.RGBSpace.HSV
  (RGB
  ,hsv
  ,hue, saturation, value
+ ,fromHSV
  )
 where
 
@@ -45,3 +46,17 @@ value rgb = v
  where
   (_,_,_,_,v) = hslsv rgb
 
+fromHSV :: (RealFrac a, Ord a) => (a,a,a) -> RGB a
+fromHSV (h,s,v) = case hi of
+    0 -> RGB v t p
+    1 -> RGB q v p
+    2 -> RGB p v t
+    3 -> RGB p q v
+    4 -> RGB t p v
+    5 -> RGB v p q
+ where
+  hi = floor (h/60) `mod` 6
+  f = mod1 (h/60)
+  p = v*(1-s)
+  q = v*(1-f*s)
+  t = v*(1-(1-f)*s)

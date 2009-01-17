@@ -115,4 +115,9 @@ hslsv (RGB r g b) | mx == mn  = (0,0,mx,0 ,mx)
 hue :: (Fractional a, Ord a) => RGB a -> a
 hue rgb = h
  where
-  (h,_,_,s,v) = hslsv rgb
+  (h,_,_,_,_) = hslsv rgb
+
+mod1 x | pf < 0 = pf+1
+       | otherwise = pf
+ where
+  (_,pf) = properFraction x

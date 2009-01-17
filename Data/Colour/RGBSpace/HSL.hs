@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008,2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +25,7 @@ module Data.Colour.RGBSpace.HSL
  (RGB
  ,hsl
  ,hue, saturation, lightness
+ ,fromHSL
  )
 where
 
@@ -45,4 +46,18 @@ lightness rgb = l
  where
   (_,_,l,_,_) = hslsv rgb
 
-
+fromHSL :: (RealFrac a, Ord a) => (a,a,a) -> RGB a
+fromHSL (h,s,l) = fmap component t
+ where
+  hk = h/360
+  tr = mod1 (hk + 1/3)
+  tg = mod1 hk
+  tb = mod1 (hk - 1/3)
+  t = RGB tr tg tb
+  q | l < 0.5 = l*(1+s)
+    | otherwise = l + s - l*s
+  p = 2*l - q
+  component t | t < 1/6 = p + ((q-p)*6*t)
+              | t < 1/2 = q
+              | t < 2/3 = p + ((q-p)*6*(2/3-t))
+              | otherwise = p

@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -XTypeSynonymInstances #-}
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +23,7 @@ THE SOFTWARE.
 -}
 module Main where
 
+import System.Random
 import Data.Word
 import Control.Monad
 import Test.QuickCheck
@@ -39,6 +40,8 @@ import Data.Colour.Names
 --import qualified Data.Colour.SDTV as SDTV
 import Data.Colour.RGB
 import Data.Colour.RGBSpace
+import Data.Colour.RGBSpace.HSL
+import Data.Colour.RGBSpace.HSV
 
 default (Rational, Double, Float)
 
@@ -93,6 +96,12 @@ instance (Arbitrary a) => Arbitrary (RGB a) where
 instance Arbitrary RGBGamut where
   arbitrary = liftM2 RGBGamut arbitrary arbitrary
   coarbitrary (RGBGamut p w) = coarbitrary p . coarbitrary w
+
+-- generate RGB values with channels between 0 and 1.
+rgbGen :: Gen (RGB Rational)
+rgbGen = fmap (\(r,g,b) -> fmap toRational (RGB r g b)) (three zeroOne)
+
+zeroOne = choose (0,1::Double)
 
 good (RGBGamut p w) = p1 && p2
  where
@@ -229,6 +238,33 @@ prop_toSRGB :: DColour -> Bool
 prop_toSRGB c =
   toRGBUsingSpace sRGBSpace c == toSRGB c
 
+prop_hueRange :: RGB Rational -> Bool
+prop_hueRange rgb = 0 <= h && h < 360
+ where
+  h = hue rgb
+
+prop_toFromHSL :: Property
+prop_toFromHSL = forAll rgbGen (\rgb -> fromHSL (hsl rgb) == rgb)
+
+prop_fromToHSL :: Rational -> Property
+prop_fromToHSL h = forAll (two (fmap toRational zeroOne))
+  (\(s,l) -> checkHSL (hsl (fromHSL (h,s,l))) (h,s,l))
+ where
+  checkHSL (h0,s0,l0) (h1,s1,l1) =  
+    snd (properFraction ((h0-h1)/360)::(Integer,Rational)) == 0
+    && s0 == s1 && l0 == l1
+
+prop_toFromHSV :: Property
+prop_toFromHSV = forAll rgbGen (\rgb -> fromHSV (hsv rgb) == rgb)
+
+prop_fromToHSV :: Rational -> Property
+prop_fromToHSV h = forAll (two (fmap toRational zeroOne))
+  (\(s,v) -> checkHSV (hsv (fromHSV (h,s,v))) (h,s,v))
+ where
+  checkHSV (h0,s0,v0) (h1,s1,v1) =  
+    snd (properFraction ((h0-h1)/360)::(Integer,Rational)) == 0
+    && s0 == s1 && v0 == v1
+
 
 tests = [("matrix-mult", test prop_matrixMult)
         ,("RGB-to-from", test prop_toFromRGB)
@@ -264,6 +300,11 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("toRGB", test prop_toRGB)
         ,("sRGB", test prop_sRGB)
         ,("toSRGB", test prop_toSRGB)
+        ,("hueRange", test prop_hueRange)
+        ,("toFromHSL", test prop_toFromHSL)
+        ,("fromToHSL", test prop_fromToHSL)
+        ,("toFromHSV", test prop_toFromHSV)
+        ,("fromToHSV", test prop_fromToHSV)
         ]
 
 main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) tests
