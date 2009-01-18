@@ -244,22 +244,26 @@ prop_hueRange rgb = 0 <= h && h < 360
   h = hue rgb
 
 prop_toFromHSL :: Property
-prop_toFromHSL = forAll rgbGen (\rgb -> fromHSL (hsl rgb) == rgb)
+prop_toFromHSL = forAll rgbGen (\rgb -> hsl' (hslView rgb) == rgb)
+ where
+  hsl' (h,s,l) = hsl h s l
 
 prop_fromToHSL :: Rational -> Property
 prop_fromToHSL h = forAll (two (fmap toRational zeroOne))
-  (\(s,l) -> checkHSL (hsl (fromHSL (h,s,l))) (h,s,l))
+  (\(s,l) -> checkHSL (hslView (hsl h s l)) (h,s,l))
  where
   checkHSL (h0,s0,l0) (h1,s1,l1) =  
     snd (properFraction ((h0-h1)/360)::(Integer,Rational)) == 0
     && s0 == s1 && l0 == l1
 
 prop_toFromHSV :: Property
-prop_toFromHSV = forAll rgbGen (\rgb -> fromHSV (hsv rgb) == rgb)
+prop_toFromHSV = forAll rgbGen (\rgb -> hsv' (hsvView rgb) == rgb)
+ where
+  hsv' (h,s,v) = hsv h s v
 
 prop_fromToHSV :: Rational -> Property
 prop_fromToHSV h = forAll (two (fmap toRational zeroOne))
-  (\(s,v) -> checkHSV (hsv (fromHSV (h,s,v))) (h,s,v))
+  (\(s,v) -> checkHSV (hsvView (hsv h s v)) (h,s,v))
  where
   checkHSV (h0,s0,v0) (h1,s1,v1) =  
     snd (properFraction ((h0-h1)/360)::(Integer,Rational)) == 0

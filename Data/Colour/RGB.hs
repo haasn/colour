@@ -112,6 +112,8 @@ hslsv (RGB r g b) | mx == mn  = (0,0,mx,0 ,mx)
   h | h0 < 0 = h0 + 360
     | otherwise = h0
 
+-- |The 'hue' coordinate of an 'RGB' value is in degrees. Its value is
+-- always in the range 0-360.
 hue :: (Fractional a, Ord a) => RGB a -> a
 hue rgb = h
  where

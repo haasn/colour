@@ -23,31 +23,41 @@ THE SOFTWARE.
 
 module Data.Colour.RGBSpace.HSL 
  (RGB
- ,hsl
+ ,hslView
  ,hue, saturation, lightness
- ,fromHSL
+ ,hsl
  )
 where
 
 import Data.Colour.RGB
 
-hsl :: (Fractional a, Ord a) => RGB a -> (a,a,a)
-hsl rgb = (h,s,l)
+-- |Returns the HSL (hue-saturation-lightness) coordinates of an 'RGB' triple.
+-- See 'hue', 'saturation', and 'lightness'.
+hslView :: (Fractional a, Ord a) => RGB a -> (a,a,a)
+hslView rgb = (h,s,l)
  where
   (h,s,l,_,_) = hslsv rgb
 
+-- |Returns the saturation coordinate of an 'RGB' triple for the HSL
+-- (hue-saturation-lightness) system.
+-- Note: This is different from 'Data.Colour.RGBSpace.HSV.saturation' for
+-- the "Data.Colour.RGBSpace.HSV"
 saturation :: (Fractional a, Ord a) => RGB a -> a
 saturation rgb = s
  where
   (_,s,_,_,_) = hslsv rgb
 
+-- |Returns the lightness coordinate of an 'RGB' triple for the HSL
+-- (hue-saturation-lightness) system.
 lightness :: (Fractional a, Ord a) => RGB a -> a
 lightness rgb = l
  where
   (_,_,l,_,_) = hslsv rgb
 
-fromHSL :: (RealFrac a, Ord a) => (a,a,a) -> RGB a
-fromHSL (h,s,l) = fmap component t
+-- |Convert HSL (hue-saturation-lightness) coordinates to an 'RGB' value.
+-- Hue is expected to be measured in degrees.
+hsl :: (RealFrac a, Ord a) => a -> a -> a -> RGB a
+hsl h s l = fmap component t
  where
   hk = h/360
   tr = mod1 (hk + 1/3)

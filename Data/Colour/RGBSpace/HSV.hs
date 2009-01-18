@@ -23,31 +23,42 @@ THE SOFTWARE.
 
 module Data.Colour.RGBSpace.HSV 
  (RGB
- ,hsv
+ ,hsvView
  ,hue, saturation, value
- ,fromHSV
+ ,hsv
  )
 where
 
 import Data.Colour.RGB
 
-hsv :: (Fractional a, Ord a) => RGB a -> (a,a,a)
-hsv rgb = (h,s,v)
+-- |Returns the HSV (hue-saturation-value) coordinates of an 'RGB' triple.
+-- See 'hue', 'saturation', and 'value'.
+hsvView :: (Fractional a, Ord a) => RGB a -> (a,a,a)
+hsvView rgb = (h,s,v)
  where
   (h,_,_,s,v) = hslsv rgb
 
+-- |Returns the saturation coordinate of an 'RGB' triple for the HSV
+-- (hue-saturation-value) system.
+-- Note: This is different from 'Data.Colour.RGBSpace.HSL.saturation' for
+-- the "Data.Colour.RGBSpace.HSL"
 saturation :: (Fractional a, Ord a) => RGB a -> a
 saturation rgb = s
  where
   (_,_,_,s,_) = hslsv rgb
 
+-- |Returns the value coordinate of an 'RGB' triple for the HSV
+-- (hue-saturation-value) system.
 value :: (Fractional a, Ord a) => RGB a -> a
 value rgb = v
  where
   (_,_,_,_,v) = hslsv rgb
 
-fromHSV :: (RealFrac a, Ord a) => (a,a,a) -> RGB a
-fromHSV (h,s,v) = case hi of
+-- |Convert HSV (hue-saturation-value) coordinates to an 'RGB' value.
+-- Hue is expected to be measured in degrees.
+
+hsv :: (RealFrac a, Ord a) => a -> a -> a -> RGB a
+hsv h s v = case hi of
     0 -> RGB v t p
     1 -> RGB q v p
     2 -> RGB p v t
