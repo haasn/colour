@@ -1,5 +1,5 @@
 Name:                colour
-Version:             2.1.0
+Version:             2.2.0
 Cabal-Version:       >= 1.2
 License:             OtherLicense
 License-file:        LICENSE
@@ -13,7 +13,8 @@ Description:         This package provides a data type for colours and transpare
                      Various colour spaces are supported.
                      A module of colour names ("Data.Colour.Names") is provided.
 Tested-with:         GHC == 6.8.2
-extra-source-files:  Tests.hs README
+extra-source-files:  Tests.hs
+data-files:          README
 
 Library
   Build-Depends:     base
