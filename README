@@ -3,12 +3,12 @@ Most software does not properly blend colours because they fail to
 gamma-correct the colours before blending.  Hopefully by using this library,
 Haskell programs dealing with colour blending will avoid this problem.
 
-I am making an early release of my colour library to get some feedback.
-I am especially interested in getting feedback on the interfaces: should
-functions be renamed, should functions be moved, etc.
+There are some optimizing RULES pragmas that could be added to improve
+preformance.  If you are having performace issues with colour, please
+let me know, and we will test some of these pragmas.
 
 Bug reports and any patches are also welcome.  Be warned, I haven't
 extensively tested this library yet.
 
 -- 
-Russell O'Connor <roconnor@cs.ru.nl>
+Russell O'Connor <roconnor@theorem.ca>

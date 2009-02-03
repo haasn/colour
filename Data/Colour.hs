@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,13 +39,73 @@ THE SOFTWARE.
 --
 -- - "Data.Colour.RGBSpace"
 
-
 --TODO
 -- - "Data.Colour.HDTV"
 --
 -- - "Data.Colour.SDTV"
+
 module Data.Colour
- ( -- *Colour type
+ (
+-- *Interfacing with Other Libraries\' Colour Spaces
+--
+-- |Executive summary: Always use "Data.Colour.SRGB" when interfacing with
+-- other libraries.
+-- Use 'Data.Colour.SRGB.toSRGB24' \/ 'Data.Colour.SRGB.sRGB24' when
+-- interfacing with libraries wanting 'Data.Word.Word8' per channel.
+-- Use 'Data.Colour.SRGB.toSRGB' \/ 'Data.Colour.SRGB.sRGB' when
+-- interfacing with libraries wanting 'Double' or 'Float' per channel.
+--
+-- Interfacing with the colour for other libraries, such as cairo
+-- (<http://www.haskell.org/gtk2hs/archives/category/cairo/>) and OpenGL
+-- (<http://hackage.haskell.org/cgi-bin/hackage-scripts/package/OpenGL>),
+-- can be a challenge because these libraries often do not use colour spaces
+-- in a consistent way.
+-- The problem is that these libraries work in a device dependent colour
+-- space and give no indication what the colour space is.
+-- For most devices this colours space is implicitly the non-linear sRGB
+-- space.
+-- However, to make matters worse, these libraries also do their
+-- compositing and blending in the device colour space.
+-- Blending and compositing ought to be done in a linear colour space,
+-- but since the device space is typically non-linear sRGB, these libraries
+-- typically produce colour blends that are too dark.
+--
+-- (Note that "Data.Colour" is a device /independent/ colour space, and
+-- produces correct blends. 
+-- e.g. compare @toSRGB (blend 0.5 lime red)@ with @RGB 0.5 0.5 0@)
+--
+-- Because these other colour libraries can only blend in device colour
+-- spaces, they are fundamentally broken and there is no \"right\" way
+-- to interface with them.
+-- For most libraries, the best one can do is assume they are working
+-- with an sRGB colour space and doing incorrect blends.  
+-- In these cases use "Data.Colour.SRGB" to convert to and from the
+-- colour coordinates.  This is the best advice for interfacing with cairo.
+--
+-- When using OpenGL, the choice is less clear.
+-- Again, OpenGL usually does blending in the device colour space.
+-- However, because blending is an important part of proper shading, one
+-- may want to consider that OpenGL is working in a linear colour space,
+-- and the resulting rasters are improperly displayed.
+-- This is born out by the fact that OpenGL extensions that support
+-- sRGB do so by converting sRGB input\/output to linear colour coordinates
+-- for processing by OpenGL.
+--
+-- The best way to use OpenGL, is to use proper sRGB surfaces for textures
+-- and rendering.
+-- These surfaces will automatically convert to and from OpenGL's linear
+-- colour space.
+-- In this case, use "Data.Colour.SRGB.Linear" to interface OpenGL's linear
+-- colour space.
+--
+-- If not using proper surfaces with OpenGL, then you have a choice between
+-- having OpenGL do improper blending or improper display
+-- If you are using OpenGL for 3D shading, I recommend using
+-- "Data.Colour.SRGB.Linear" (thus choosing improper OpenGL display).
+-- If you are not using OpenGL for 3D shading, I recommend using
+-- "Data.Colour.SRGB" (thus choosing improper OpenGL blending).
+
+-- *Colour type
   Colour
  ,colourConvert
 
