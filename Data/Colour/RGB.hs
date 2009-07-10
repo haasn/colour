@@ -25,6 +25,7 @@ module Data.Colour.RGB where
 import Data.List
 import Data.Colour.Matrix
 import Data.Colour.CIE.Chromaticity
+import Control.Applicative
 
 -- |An RGB triple for an unspecified colour space.
 data RGB a = RGB {channelRed :: !a
@@ -34,6 +35,10 @@ data RGB a = RGB {channelRed :: !a
 
 instance Functor RGB where
  fmap f (RGB r g b) = RGB (f r) (f g) (f b)
+
+instance Applicative RGB where
+ pure c = RGB c c c
+ (RGB fr fg fb) <*> (RGB r g b) = RGB (fr r) (fg g) (fb b)
 
 -- |Uncurries a function expecting three r, g, b parameters.
 uncurryRGB :: (a -> a -> a -> b) -> RGB a -> b
