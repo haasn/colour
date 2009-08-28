@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@ module Data.Colour.CIE
  ,chromaConvert
  ,chromaColour
 
- --,lightness, cieLab, cieLuv
+ ,lightness, cieLABView, cieLAB --cieLuv
  )
 where
 
@@ -86,27 +86,55 @@ chromaColour ch y = cieXYZ (s*ch_x) y (s*ch_z)
   (ch_x, ch_y, ch_z) = chromaCoords ch
   s = y/ch_y
 
--- |Returns the lightness of a colour, which is a perceptually uniform
--- measure.
-lightness :: (Ord a, Floating a) => Colour a -> a
-lightness c | (6/29)^3 < y = 116*y**(1/3) - 16
-            | otherwise = (29/3)^3*y
+-- |Returns the lightness of a colour with respect to a given white point.
+-- Lightness is a perceptually uniform measure.
+lightness :: (Ord a, Floating a) => Chromaticity a -- ^White point
+                                 -> Colour a -> a
+lightness white_ch c | (6/29)^3 < y' = 116*y'**(1/3) - 16
+                     | otherwise = (29/3)^3*y'
  where
-  y = luminance c
+  white = chromaColour white_ch 1.0
+  y' = (luminance c/luminance white)
 
 -- |Returns the CIELAB coordinates of a colour, which is a
 -- perceptually uniform colour space.
+-- The first coordinate is 'lightness'.
 -- If you don't know what white point to use, use
 -- 'Data.Colour.CIE.Illuminant.d65'.
-cieLab :: (Ord a, Floating a) => Chromaticity a -- ^White point
+cieLABView :: (Ord a, Floating a) => Chromaticity a -- ^White point
                               -> Colour a -> (a,a,a)
-cieLab white_ch c = (lightness c, a, b)
+cieLABView white_ch c = (lightness white_ch c, a, b)
  where
   white = chromaColour white_ch 1.0
   (x,y,z) = toCIEXYZ c
   (xn,yn,zn) = toCIEXYZ white
-  a = 500*((x/xn)**(1/3) - (y/yn)**(1/3))
-  b = 200*((y/yn)**(1/3) - (z/zn)**(1/3))
+  (fx, fy, fz) = (f (x/xn), f (y/yn), f (z/zn))
+  a = 500*(fx - fy)
+  b = 200*(fy - fz)
+  f x | (6/29)^3 < x = x**(1/3)
+      | otherwise = 841/108*x + 4/29
+
+-- |Returns the colour for given CIELAB coordinates, which is a
+-- perceptually uniform colour space.
+-- If you don't know what white point to use, use
+-- 'Data.Colour.CIE.Illuminant.d65'.
+cieLAB :: (Ord a, Floating a) => Chromaticity a -- ^White point
+                              -> a              -- ^L* coordinate (lightness)
+                              -> a              -- ^a* coordinate
+                              -> a              -- ^b* coordinate
+                              -> Colour a
+cieLAB white_ch l a b = cieXYZ (xn*transform fx)
+                               (yn*transform fy)
+                               (zn*transform fz)
+ where
+  white = chromaColour white_ch 1.0
+  (xn,yn,zn) = toCIEXYZ white
+  fx = fy + a/500
+  fy = (l + 16)/116
+  fz = fy - b/200
+  delta = 6/29
+  transform fa | fa > delta = fa^3
+               | otherwise = (fa - 16/116)*3*delta^2
 
 -- |Returns the CIELUV coordinates of a colour, which is a
 -- perceptually uniform colour space.
@@ -119,7 +147,7 @@ cieLuv white_ch c = (l, 13*l*(u'-un'), 13*l*(v'-vn'))
   white = chromaColour white_ch 1.0
   (u', v') = u'v' c
   (un', vn') = u'v' white
-  l = lightness c
+  l = lightness white_ch c
 --------------------------------------------------------------------------
 {- not for export -}
 u'v' :: (Ord a, Floating a) => Colour a -> (a,a)

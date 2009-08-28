@@ -35,6 +35,7 @@ import Data.Colour
 import Data.Colour.SRGB
 import Data.Colour.SRGB.Linear
 import Data.Colour.CIE
+import Data.Colour.CIE.Illuminant (d65)
 import Data.Colour.Names
 --import Data.Colour.HDTV as HDTV
 --import qualified Data.Colour.SDTV as SDTV
@@ -142,6 +143,12 @@ prop_toFromSRGB c = uncurryRGB sRGB24 (toSRGB24 c) == c
 
 prop_fromToSRGB :: Word8 -> Word8 -> Word8 -> Bool
 prop_fromToSRGB r' g' b' = toSRGB24 (sRGB24 r' g' b') == RGB r' g' b'
+
+prop_toFromLAB :: Chromaticity Double -> DColour -> Bool
+prop_toFromLAB wp c = cc (cieLAB wp l a b) == cc c
+ where
+  (l,a,b) = cieLABView wp c
+  cc = toSRGB24
 
 {-
 prop_fromToY'CbCr709 :: Word8 -> Word8 -> Word8 -> Bool
@@ -276,6 +283,7 @@ tests = [("matrix-mult", test prop_matrixMult)
         ,("XYZ-from-to", test prop_fromToXYZ)
         ,("sRGB-to-from", test prop_toFromSRGB)
         ,("sRGB-from-to", test prop_fromToSRGB)
+        ,("cieLAB-to-from", test (prop_toFromLAB d65))
 --        ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
 --        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
         ,("dissolve-id", test prop_disolveId)
