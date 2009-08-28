@@ -183,6 +183,7 @@ where
 
 import Prelude hiding (tan)
 import Data.Colour.SRGB
+import Data.Colour (black)
 
 readColourName :: (Monad m, Ord a, Floating a) => String -> m (Colour a)
 readColourName "aliceblue" = return aliceblue
@@ -356,8 +357,7 @@ beige = sRGB24 245 245 220
 bisque :: (Ord a, Floating a) => Colour a
 bisque = sRGB24 255 228 196
 
-black :: (Ord a, Floating a) => Colour a
-black = sRGB24 0 0 0
+-- black is reexported from Data.Colour
 
 blanchedalmond :: (Ord a, Floating a) => Colour a
 blanchedalmond = sRGB24 255 235 205

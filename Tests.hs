@@ -79,8 +79,7 @@ instance (Real a, Fractional a, Arbitrary a) =>
   coarbitrary ac = coarbitrary a . coarbitrary c
    where
     a = alphaChannel ac
-    c = ac `over` mempty
-    d = opaque c `asTypeOf` ac -- to help the type sytem
+    c = ac `over` black
 
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (Chromaticity a) where

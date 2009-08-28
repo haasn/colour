@@ -108,6 +108,7 @@ module Data.Colour
 -- *Colour type
   Colour
  ,colourConvert
+ ,black
 
  ,AlphaColour
  ,opaque, withOpacity

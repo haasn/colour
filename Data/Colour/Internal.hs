@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2009
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,8 +48,13 @@ colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
+-- 'black' is the colourless colour.  It is the identity colour in
+-- additive colour spaces.
+black :: (Num a) => Colour a
+black = RGB Chan.empty Chan.empty Chan.empty
+
 instance (Num a) => Monoid (Colour a) where
-  mempty = RGB Chan.empty Chan.empty Chan.empty
+  mempty = black
   (RGB r1 g1 b1) `mappend` (RGB r2 g2 b2) =
     RGB (r1 `Chan.add` r2) (g1 `Chan.add` g2) (b1 `Chan.add` b2)
   mconcat l = RGB (Chan.sum lr) (Chan.sum lg) (Chan.sum lb)
