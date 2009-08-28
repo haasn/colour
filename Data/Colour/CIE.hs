@@ -52,7 +52,7 @@ cieXYZ x y z = rgb r g b
   [r,g,b] = mult matrix [x,y,z]
   matrix = map (map fromRational) xyz2rgb709
 
--- |Return the XYZ colour coordinates for the 2&#176; standard
+-- |Returns the XYZ colour coordinates for the 2&#176; standard
 -- (colourimetric) observer.
 cieXYZView :: (Fractional a) => Colour a -> (a,a,a)
 cieXYZView c = (x,y,z)
@@ -162,4 +162,3 @@ u'v' c = (4*x/(x+15*y+3*z), 9*y/(x+15*y+3*z))
 rgb7092xyz = (rgb2xyz sRGBGamut)
 
 xyz2rgb709 = inverse rgb7092xyz
-
