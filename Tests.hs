@@ -132,10 +132,10 @@ prop_fromToRGB r g b = toRGB (rgb r g b) == RGB r g b
 prop_toFromXYZ :: RColour -> Bool
 prop_toFromXYZ c = (cieXYZ x y z) == c
  where
-  (x,y,z) = toCIEXYZ c
+  (x,y,z) = cieXYZView c
 
 prop_fromToXYZ :: Rational -> Rational -> Rational -> Bool
-prop_fromToXYZ x y z = toCIEXYZ (cieXYZ x y z) == (x,y,z)
+prop_fromToXYZ x y z = cieXYZView (cieXYZ x y z) == (x,y,z)
 
 -- Uses the fact that an Arbitrary colour is an sRGB24 colour.
 prop_toFromSRGB :: DColour -> Bool

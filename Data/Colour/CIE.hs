@@ -24,7 +24,8 @@ THE SOFTWARE.
 -- Illumination (CIE).
 module Data.Colour.CIE
  (Colour
- ,cieXYZ, toCIEXYZ, luminance
+ ,cieXYZ, cieXYZView, luminance
+ ,toCIEXYZ -- depricated
 
  ,Chromaticity
  ,mkChromaticity, chromaCoords
@@ -53,12 +54,15 @@ cieXYZ x y z = rgb r g b
 
 -- |Return the XYZ colour coordinates for the 2&#176; standard
 -- (colourimetric) observer.
-toCIEXYZ :: (Fractional a) => Colour a -> (a,a,a)
-toCIEXYZ c = (x,y,z)
+cieXYZView :: (Fractional a) => Colour a -> (a,a,a)
+cieXYZView c = (x,y,z)
  where
   RGB r g b = toRGB c
   [x,y,z] = mult matrix [r,g,b]
   matrix = map (map fromRational) rgb7092xyz
+
+{-# DEPRECATED toCIEXYZ "`toCIEXYZ' has been renamed `cieXYZView'" #-}
+toCIEXYZ x = cieXYZView x
 
 {- CIE luminance -}
 -- |Returns the Y colour coordinate (luminance) for the 2&#176; standard
