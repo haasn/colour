@@ -1,10 +1,11 @@
 Name:                colour
-Version:             2.2.1
+Version:             2.3.0
 Cabal-Version:       >= 1.2
 License:             OtherLicense
 License-file:        LICENSE
 Author:              Russell O'Connor
 Maintainer:          Russell O'Connor <roconnor@theorem.ca>
+Homepage:            http://www.haskell.org/haskellwiki/Colour
 Build-Type:          Simple
 Category:            data, graphics
 Synopsis:            A model for human colour/color perception
@@ -17,7 +18,7 @@ extra-source-files:  Tests.hs
 data-files:          README CHANGELOG
 
 Library
-  Build-Depends:     base
+  Build-Depends:     base >= 3 && < 5
   Exposed-Modules:   Data.Colour
                      Data.Colour.SRGB
                      Data.Colour.SRGB.Linear
