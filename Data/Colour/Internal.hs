@@ -48,7 +48,7 @@ colourConvert :: (Fractional b, Real a) => Colour a -> Colour b
 colourConvert (RGB r g b) =
   RGB (Chan.convert r) (Chan.convert g) (Chan.convert b)
 
--- 'black' is the colourless colour.  It is the identity colour in
+-- |'black' is the colourless colour.  It is the identity colour in
 -- additive colour spaces.
 black :: (Num a) => Colour a
 black = RGB Chan.empty Chan.empty Chan.empty
