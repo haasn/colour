@@ -1,3 +1,7 @@
+New in version 2.3.1:
+
+Fixed Data.Colour.Names colour documenation.
+
 New in version 2.3:
 
 - black exported by Data.Colour
