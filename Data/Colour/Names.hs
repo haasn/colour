@@ -1,4 +1,3 @@
-{-# OPTIONS_HADDOCK prune #-}
 {-
 Copyright (c) 2008, 2009
 Russell O'Connor
