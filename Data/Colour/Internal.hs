@@ -111,7 +111,7 @@ class AffineSpace f where
  -- The last parameter will get the remaining weight.
  -- e.g.
  --
- -- >affineCombo [(0.2,a), (0.3,b)] c == 0.2*a + 0.3*b + 0.4*c
+ -- >affineCombo [(0.2,a), (0.3,b)] c == 0.2*a + 0.3*b + 0.5*c
  --
  -- Weights can be negative, or greater than 1.0; however, be aware
  -- that non-convex combinations may lead to out of gamut colours.
