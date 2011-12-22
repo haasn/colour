@@ -52,20 +52,12 @@ type FColour = Colour Float
 type RAlphaColour = AlphaColour Rational
 type DAlphaColour = AlphaColour Double
 
-instance Arbitrary Word8 where
-  arbitrary = liftM fromIntegral $
-              choose (fromIntegral (minBound::Word8)::Int,
-                      fromIntegral (maxBound::Word8)::Int)
-  coarbitrary x = variant (fromIntegral x)
-
-instance Arbitrary (Rational) where
-  arbitrary = liftM (toRational :: Double -> Rational) $ arbitrary
-  coarbitrary x = coarbitrary (fromRational x :: Double)
-
 instance (Real a, Fractional a, Arbitrary a) => Arbitrary (Colour a) where
   arbitrary = liftM3 mkColour arbitrary arbitrary arbitrary
    where
     mkColour r' g' b' = colourConvert (sRGB24 r' g' b'::Colour Double)
+
+instance (Real a, Fractional a, CoArbitrary a) => CoArbitrary (Colour a) where
   coarbitrary c = coarbitrary (r,g,b)
    where
     (RGB r g b) = toRGB c
@@ -77,6 +69,9 @@ instance (Real a, Fractional a, Arbitrary a) =>
     mkAlphaColour :: (Fractional a) => Colour a -> Word8 -> AlphaColour a
     mkAlphaColour c a =
       c `withOpacity` (fromIntegral a/fromIntegral (maxBound `asTypeOf` a))
+
+instance (Real a, Fractional a, CoArbitrary a) =>
+         CoArbitrary (AlphaColour a) where
   coarbitrary ac = coarbitrary a . coarbitrary c
    where
     a = alphaChannel ac
@@ -85,16 +80,23 @@ instance (Real a, Fractional a, Arbitrary a) =>
 instance (Fractional a, Arbitrary a) =>
          Arbitrary (Chromaticity a) where
   arbitrary = liftM2 mkChromaticity arbitrary arbitrary
+
+instance (Fractional a, CoArbitrary a) =>
+         CoArbitrary (Chromaticity a) where
   coarbitrary c = coarbitrary x . coarbitrary y
    where
     (x,y,_) = chromaCoords c
 
 instance (Arbitrary a) => Arbitrary (RGB a) where
   arbitrary = liftM3 RGB arbitrary arbitrary arbitrary
+
+instance (CoArbitrary a) => CoArbitrary (RGB a) where
   coarbitrary (RGB r g b) = coarbitrary (r,g,b)
 
 instance Arbitrary RGBGamut where
   arbitrary = liftM2 RGBGamut arbitrary arbitrary
+
+instance CoArbitrary RGBGamut where
   coarbitrary (RGBGamut p w) = coarbitrary p . coarbitrary w
 
 -- generate RGB values with channels between 0 and 1.
@@ -102,6 +104,12 @@ rgbGen :: Gen (RGB Rational)
 rgbGen = fmap (\(r,g,b) -> fmap toRational (RGB r g b)) (three zeroOne)
 
 zeroOne = choose (0,1::Double)
+
+two :: Monad m => m a -> m (a, a)
+two m = liftM2 (,) m m
+
+three :: Monad m => m a -> m (a, a, a)
+three m = liftM3 (,,) m m m
 
 good (RGBGamut p w) = p1 && p2
  where
@@ -121,6 +129,8 @@ newtype Depth = Depth Int deriving Show
 
 instance Arbitrary Depth where
   arbitrary = liftM Depth $ choose (0,11)
+
+instance CoArbitrary Depth where
   coarbitrary (Depth x) = coarbitrary x
 
 prop_toFromRGB :: RColour -> Bool
@@ -275,47 +285,46 @@ prop_fromToHSV h = forAll (two (fmap toRational zeroOne))
     snd (properFraction ((h0-h1)/360)::(Integer,Rational)) == 0
     && s0 == s1 && v0 == v1
 
-
-tests = [("matrix-mult", test prop_matrixMult)
-        ,("RGB-to-from", test prop_toFromRGB)
-        ,("RGB-from-to", test prop_fromToRGB)
-        ,("XYZ-to-from", test prop_toFromXYZ)
-        ,("XYZ-from-to", test prop_fromToXYZ)
-        ,("sRGB-to-from", test prop_toFromSRGB)
-        ,("sRGB-from-to", test prop_fromToSRGB)
-        ,("cieLAB-to-from", test (prop_toFromLAB d65))
---        ,("Y'CbCr-709-from-to", test prop_fromToY'CbCr709)
---        ,("Y'CbCr-601-from-to", test prop_fromToY'CbCr601)
-        ,("dissolve-id", test prop_disolveId)
-        ,("dissolve-transparent", test prop_disolveTransparent)
-        ,("transparent-over", test prop_transparentOver)
-        ,("over-transparent", test prop_overTransparent)
-        ,("opaque-over", test prop_opaqueOver)
-        ,("over-opaque", test prop_overOpaque)
-        ,("blend-over", test prop_blendOver)
-        ,("blend-transparent", test prop_blendTransparent)
-        ,("blend-flip", test prop_blendFlip)
-        ,("darken-blend", test prop_darkenBlend)
-        ,("darken-black", test prop_darkenBlack)
-        ,("darken-id", test prop_darkenId)
-        ,("atop-opaque", test prop_atopOpaque)
-        ,("transparent-atop", test prop_transparentAtop)
-        ,("atop-transparent", test prop_atopTransparent)
-        ,("atop-alpha", test prop_atopAlpha)
-        ,("colour-show-read", test prop_showReadC)
-        ,("alphaColour-show-read", test prop_showReadAC)
-        ,("sRGB24-show-length", test prop_sRGB24showlength)
-        ,("sRGB24-read-show", test prop_readshowSRGB24)
-        ,("luminance-white", test prop_luminance_white)
-        ,("rgb", test prop_rgb)
-        ,("toRGB", test prop_toRGB)
-        ,("sRGB", test prop_sRGB)
-        ,("toSRGB", test prop_toSRGB)
-        ,("hueRange", test prop_hueRange)
-        ,("toFromHSL", test prop_toFromHSL)
-        ,("fromToHSL", test prop_fromToHSL)
-        ,("toFromHSV", test prop_toFromHSV)
-        ,("fromToHSV", test prop_fromToHSV)
+quickChecks = [("matrix-mult", quickCheck prop_matrixMult)
+        ,("RGB-to-from", quickCheck prop_toFromRGB)
+        ,("RGB-from-to", quickCheck prop_fromToRGB)
+        ,("XYZ-to-from", quickCheck prop_toFromXYZ)
+        ,("XYZ-from-to", quickCheck prop_fromToXYZ)
+        ,("sRGB-to-from", quickCheck prop_toFromSRGB)
+        ,("sRGB-from-to", quickCheck prop_fromToSRGB)
+        ,("cieLAB-to-from", quickCheck (prop_toFromLAB d65))
+--        ,("Y'CbCr-709-from-to", quickCheck prop_fromToY'CbCr709)
+--        ,("Y'CbCr-601-from-to", quickCheck prop_fromToY'CbCr601)
+        ,("dissolve-id", quickCheck prop_disolveId)
+        ,("dissolve-transparent", quickCheck prop_disolveTransparent)
+        ,("transparent-over", quickCheck prop_transparentOver)
+        ,("over-transparent", quickCheck prop_overTransparent)
+        ,("opaque-over", quickCheck prop_opaqueOver)
+        ,("over-opaque", quickCheck prop_overOpaque)
+        ,("blend-over", quickCheck prop_blendOver)
+        ,("blend-transparent", quickCheck prop_blendTransparent)
+        ,("blend-flip", quickCheck prop_blendFlip)
+        ,("darken-blend", quickCheck prop_darkenBlend)
+        ,("darken-black", quickCheck prop_darkenBlack)
+        ,("darken-id", quickCheck prop_darkenId)
+        ,("atop-opaque", quickCheck prop_atopOpaque)
+        ,("transparent-atop", quickCheck prop_transparentAtop)
+        ,("atop-transparent", quickCheck prop_atopTransparent)
+        ,("atop-alpha", quickCheck prop_atopAlpha)
+        ,("colour-show-read", quickCheck prop_showReadC)
+        ,("alphaColour-show-read", quickCheck prop_showReadAC)
+        ,("sRGB24-show-length", quickCheck prop_sRGB24showlength)
+        ,("sRGB24-read-show", quickCheck prop_readshowSRGB24)
+        ,("luminance-white", quickCheck prop_luminance_white)
+        ,("rgb", quickCheck prop_rgb)
+        ,("toRGB", quickCheck prop_toRGB)
+        ,("sRGB", quickCheck prop_sRGB)
+        ,("toSRGB", quickCheck prop_toSRGB)
+        ,("hueRange", quickCheck prop_hueRange)
+        ,("toFromHSL", quickCheck prop_toFromHSL)
+        ,("fromToHSL", quickCheck prop_fromToHSL)
+        ,("toFromHSV", quickCheck prop_toFromHSV)
+        ,("fromToHSV", quickCheck prop_fromToHSV)
         ]
 
-main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) tests
+main  = mapM_ (\(s,a) -> printf "%-25s: " s >> a) quickChecks
