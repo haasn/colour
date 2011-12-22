@@ -130,7 +130,7 @@ import Data.Colour.Internal
 import qualified Data.Colour.SRGB.Linear
 import Data.Colour.CIE.Chromaticity (app_prec, infix_prec)
 
-instance (Fractional a) => Show (Colour a) where
+instance (Fractional a, Show a) => Show (Colour a) where
   showsPrec d c = showParen (d > app_prec) showStr
    where
     showStr = showString linearConstructorQualifiedName
@@ -156,7 +156,7 @@ instance (Fractional a, Read a) => Read (Colour a) where
 linearConstructorQualifiedName = "Data.Colour.SRGB.Linear.rgb"
 linearConstructorName = "rgb"
 
-instance (Fractional a) => Show (AlphaColour a) where
+instance (Fractional a, Show a) => Show (AlphaColour a) where
   showsPrec d ac | a == 0 = showString "transparent"
                  | otherwise = showParen (d > infix_prec) showStr
    where

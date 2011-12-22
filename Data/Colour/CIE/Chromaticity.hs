@@ -53,7 +53,7 @@ chromaZ (Chroma x y) = 1 - x - y
 chromaConvert :: (Fractional b, Real a) => Chromaticity a -> Chromaticity b
 chromaConvert (Chroma x y) = Chroma (realToFrac x) (realToFrac y)
 
-instance (Fractional a) => Show (Chromaticity a) where
+instance (Fractional a, Show a) => Show (Chromaticity a) where
   showsPrec d c = showParen (d > app_prec) showStr
    where
     showStr = showString "mkChromaticity " . (showsPrec (app_prec+1) x)
