@@ -73,7 +73,7 @@ data Alpha = Alpha
 -- To get the (pre-multiplied) colour channel of an 'AlphaColour' @c@,
 -- simply composite @c@ over black.
 --
--- >c `over` (mempty :: Colour a)
+-- >c `over` black
 
 -- Internally we use a premultiplied-alpha representation.
 data AlphaColour a = RGBA !(Colour a) !(Chan Alpha a) deriving (Eq)
