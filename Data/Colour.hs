@@ -156,7 +156,7 @@ instance (Fractional a, Read a) => Read (Colour a) where
 linearConstructorQualifiedName = "Data.Colour.SRGB.Linear.rgb"
 linearConstructorName = "rgb"
 
-instance (Fractional a, Show a) => Show (AlphaColour a) where
+instance (Fractional a, Show a, Eq a) => Show (AlphaColour a) where
   showsPrec d ac | a == 0 = showString "transparent"
                  | otherwise = showParen (d > infix_prec) showStr
    where
