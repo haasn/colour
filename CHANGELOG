@@ -1,3 +1,7 @@
+New in version 2.3.3:
+
+- Support for GHC 7.4 from Eugene Kirpichov.
+
 New in version 2.3.2:
 
 - Support for GHC 7.4.1 from Brent Yorgey.
