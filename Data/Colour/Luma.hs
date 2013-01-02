@@ -26,63 +26,73 @@ module Data.Colour.Luma where
 import Data.Colour
 import Data.Colour.RGBSpace
 import Data.Colour.Internal (quantize)
+import Data.Colour.CIE (luminance)
 import Data.Word
+import Control.Applicative
 
-type LumaCoef = (Rational, Rational, Rational)
+type LumaCoef = RGB Rational
 
-luma :: (Ord a, Floating a) => LumaCoef -> (Colour a -> RGB a)
-                                        -> Colour a -> a
-luma (lr, lg, lb) toRGB c =
-  transformBy [fromRational lr, fromRational lg, fromRational lb]
+lumaCoef :: RGBGamut -> LumaCoef
+lumaCoef gamut = RGB lr lg lb
  where
-  RGB r' g' b' = toRGB c
-  transformBy l = sum $ zipWith (*) l [r',g',b']
+  space = linearRGBSpace gamut
+  lr = luminance (rgbUsingSpace space 1 0 0)
+  lg = luminance (rgbUsingSpace space 0 1 0)
+  lb = luminance (rgbUsingSpace space 0 0 1)
 
-y'PbPr :: (Ord a, Floating a) => LumaCoef -> (a -> a -> a -> Colour a) 
-                                          -> a -> a -> a -> Colour a
-y'PbPr (lr, lg, lb) rgb y' pb pr = rgb r' g' b'
+luma :: (Ord a, Floating a) => LumaCoef -> RGBSpace a -> Colour a -> a
+luma lumaCoef space c = rv + gv + bv
+ where
+  RGB rv gv bv = liftA2 (*) (toRGBUsingSpace space c) (fromRational <$> lumaCoef)
+
+y'PbPr :: (Ord a, Floating a) => LumaCoef -> RGBSpace a -> a -> a -> a -> Colour a
+y'PbPr (RGB lr lg lb) space y' pb pr = rgbUsingSpace space r' g' b'
  where
   r' = y' + fromRational ((lg + lb)/0.5)*pr
   g' = (y' - fromRational lr*r' - fromRational lb*b')/fromRational lg
   b' = y' + fromRational ((lg + lr)/0.5)*pb
 
-toY'PbPr :: (Ord a, Floating a) => LumaCoef -> (Colour a -> RGB a)
-                                            -> Colour a -> (a, a, a)
-toY'PbPr l@(lr, lg, lb) toRGB c = (y', pb, pr)
+toY'PbPr :: (Ord a, Floating a) => LumaCoef -> RGBSpace a -> Colour a -> (a, a, a)
+toY'PbPr lumaCoef@(RGB lr lg lb) space c = (y', pb, pr)
  where
-  y' = luma l toRGB c
-  RGB r' g' b' = toRGB c
+  RGB r' g' b' = toRGBUsingSpace space c
+  y' = luma lumaCoef space c
   pb = fromRational (0.5/(lg + lr))*(b' - y')
   pr = fromRational (0.5/(lg + lb))*(r' - y')
 
 y'CbCr :: (Floating a, RealFrac a) =>
-          LumaCoef -> (a -> a -> a -> Colour a) 
-                   -> Word8 -> Word8 -> Word8 -> Colour a
-y'CbCr l rgb y' cb cr = y'PbPr l rgb y'0 pb pr
+          LumaCoef -> RGBSpace a -> Word8 -> Word8 -> Word8 -> Colour a
+y'CbCr lumaCoef space y' cb cr = y'PbPr lumaCoef space y'0 pb pr
  where
   y'0 = ((fromIntegral y') - 16)/219
   pb  = ((fromIntegral cb) - 128)/224
   pr  = ((fromIntegral cr) - 128)/224
 
 toY'CbCr :: (Floating a, RealFrac a) =>
-            LumaCoef -> (Colour a -> RGB a)
-                     -> Colour a -> (Word8, Word8, Word8)
-toY'CbCr l toRGB c = (quantize $ 16 + 219*y'
-                     ,quantize $ 128 + 224*pb
-                     ,quantize $ 128 + 224*pr)
+            LumaCoef -> RGBSpace a -> Colour a -> (Word8, Word8, Word8)
+toY'CbCr lumaCoef space c = (quantize $ 16 + 219*y'
+                            ,quantize $ 128 + 224*pb
+                            ,quantize $ 128 + 224*pr)
  where
-  (y', pb, pr) = toY'PbPr l toRGB c
+  (y', pb, pr) = toY'PbPr lumaCoef space c
 
 r'g'b' :: (Floating a, RealFrac a) =>
-          (a -> a -> a -> Colour a) ->
-          Word8 -> Word8 -> Word8 -> Colour a
-r'g'b' rgb r' g' b' = rgb (f r') (f g') (f b')
+          RGBSpace a -> Word8 -> Word8 -> Word8 -> Colour a
+r'g'b' space r' g' b' = rgbUsingSpace space (f r') (f g') (f b')
  where
   f x' = ((fromIntegral x') - 16)/219
 
 toR'G'B' :: (Floating a, RealFrac a) =>
-            (Colour a -> RGB a) ->
-            Colour a -> RGB Word8
-toR'G'B' toRGB c = fmap f (toRGB c)
+            RGBSpace a -> Colour a -> RGB Word8
+toR'G'B' space c = fmap f (toRGBUsingSpace space c)
  where
   f x' = quantize $ 16 + 219*x'
+  
+{- The commonly used transfer function fror HDTV and SDTV -}
+transferFunction :: (Ord a, Floating a) => TransferFunction a
+transferFunction = TransferFunction tf invtf 0.5 -- Digital Video and HDTV Algorithims and Interfaces, page. 264
+ where
+  tf x | x < 0.0018 = 4.5 * x
+       | otherwise = 1.099 * x**(0.45) - 0.099
+  invtf x | x < 0.0018*4.5 = x / 4.5
+	  | otherwise = (x**(recip 0.45)/1.099) + 0.099

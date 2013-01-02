@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2013
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,36 +21,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 -- |Defines the Y'CbCr and Y'PbPr colour spaces in accordance with
--- ITU-R Recommendation BT.709 used for high definition television
--- (HDTV).
+-- ITU-R Recommendation BT.601 used for 525-line (North America) standard
+-- definition television (SDTV).
 --
--- For standard definition television (SDTV) see "Data.Colour.SDTV".
---
--- Also allows you to create a colour from /linear/ coordinates using
--- the ITU-R Recommendation BT.709 RGB primaries, which are the
--- primaries used in sRGB.
--- See also "Data.Colour.SRGB".
-module Data.Colour.HDTV
+-- For high definition television (HDTV) see "Data.Colour.HDTV".
+module Data.Colour.SDTV525
+{-
  (Colour
  ,luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
  )
+ -}
 where
 
 import Data.Word
-import Data.Colour.Internal
-import Data.Colour.SRGB
 import Data.Colour.RGBSpace
+import Data.Colour.SRGB (sRGBSpace)
+import Data.Colour.CIE.Illuminant (d65)
+import Data.Colour.CIE
+import Data.Colour.SDTV
 import qualified Data.Colour.Luma as L
 
 space :: (Ord a, Floating a) => RGBSpace a
-space = mkRGBSpace (gamut sRGBSpace) L.transferFunction
+space = mkRGBSpace gamut L.transferFunction
+ where
+  gamut = mkRGBGamut (RGB (mkChromaticity 0.63 0.34)
+                          (mkChromaticity 0.31 0.595)
+                          (mkChromaticity 0.155 0.07))
+                     d65
 
-lumaCoef :: L.LumaCoef
-lumaCoef = L.lumaCoef (gamut space)
-
-{- rec 709 luma -}
+{-
+space625 = mkRGBSpace gamut transfer
+ where
+  gamut = mkRGBGamut (RGB (mkChromaticity 0.64 0.33)
+                          (mkChromaticity 0.29 0.60)
+                          (mkChromaticity 0.15 0.06))
+                     d65
+  transfer = transferFunction sRGBSpace
+-}
+  
+{- rec 601 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
 luma :: (Ord a, Floating a) => Colour a -> a
 luma = L.luma lumaCoef space

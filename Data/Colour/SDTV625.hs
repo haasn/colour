@@ -1,5 +1,5 @@
 {-
-Copyright (c) 2008
+Copyright (c) 2008, 2013
 Russell O'Connor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,48 +21,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 -- |Defines the Y'CbCr and Y'PbPr colour spaces in accordance with
--- ITU-R Recommendation BT.601 used for standard definition television
--- (SDTV).
+-- ITU-R Recommendation BT.601 used for 525-line (North America) standard
+-- definition television (SDTV).
 --
 -- For high definition television (HDTV) see "Data.Colour.HDTV".
-module Data.Colour.SDTV
+module Data.Colour.SDTV625
+{-
  (Colour
  ,luma
  ,y'PbPr, toY'PbPr
  ,y'CbCr, toY'CbCr
  )
+ -}
 where
 
 import Data.Word
 import Data.Colour.RGBSpace
+import Data.Colour.SRGB (sRGBSpace)
+import Data.Colour.CIE.Illuminant (d65)
+import Data.Colour.CIE
+import Data.Colour.SDTV
 import qualified Data.Colour.Luma as L
 
-{- #TODO# ALL BROKEN  NEEDS TO BE NONLINEAR!!! -}
+space :: (Ord a, Floating a) => RGBSpace a
+space = mkRGBSpace gamut transfer
+ where
+  gamut = mkRGBGamut (RGB (mkChromaticity 0.64 0.33)
+                          (mkChromaticity 0.29 0.60)
+                          (mkChromaticity 0.15 0.06))
+                     d65
+  transfer = transferFunction sRGBSpace
+  
 {- rec 601 luma -}
 -- |Luma (Y') approximates the 'Data.Colour.CIE.lightness' of a 'Colour'.
-luma :: (Ord a, Floating a) => RGBGamut a
-                            -> Colour a -> a
-luma space = L.luma lumaCoef (toRGBUsingSpace space)
+luma :: (Ord a, Floating a) => Colour a -> a
+luma = L.luma lumaCoef space
 
 -- |Construct a 'Colour' from Y'PbPr coordinates.
-y'PbPr :: (Ord a, Floating a) => RGBGamut a
-                              -> a -> a -> a -> Colour a
-y'PbPr space = L.y'PbPr lumaCoef (rgbUsingSpace space)
+y'PbPr :: (Ord a, Floating a) => a -> a -> a -> Colour a
+y'PbPr = L.y'PbPr lumaCoef space
 
 -- |Returns the Y'PbPr coordinates of a 'Colour'.
-toY'PbPr :: (Ord a, Floating a) => RGBGamut a
-                                -> Colour a -> (a, a, a)
-toY'PbPr space = L.toY'PbPr lumaCoef (toRGBUsingSpace space)
+toY'PbPr :: (Ord a, Floating a) => Colour a -> (a, a, a)
+toY'PbPr = L.toY'PbPr lumaCoef space
 
--- |Construct a 'Colour' from Y'CbRr 8-bit coordinates.
-y'CbCr :: (Floating a, RealFrac a) => RGBGamut a
-                                   -> Word8 -> Word8 -> Word8 -> Colour a
-y'CbCr space = L.y'CbCr lumaCoef (rgbUsingSpace space)
+-- |Construct a 'Colour' from Y'CbRr studio 8-bit coordinates.
+y'CbCr :: (Floating a, RealFrac a) => Word8 -> Word8 -> Word8 -> Colour a
+y'CbCr = L.y'CbCr lumaCoef space
 
--- |Returns the Y'CbCr 8-bit coordinates of a 'Colour'.
-toY'CbCr :: (Floating a, RealFrac a) => RGBGamut a
-                                     -> Colour a -> (Word8, Word8, Word8)
-toY'CbCr space = L.toY'CbCr lumaCoef (toRGBUsingSpace space)
+-- |Returns the Y'CbCr studio 8-bit coordinates of a 'Colour'.
+toY'CbCr :: (Floating a, RealFrac a) => Colour a -> (Word8, Word8, Word8)
+toY'CbCr = L.toY'CbCr lumaCoef space
 
-{- Not for export -}
-lumaCoef = (0.299, 0.587, 0.114)
+-- |Construct a 'Colour' from R'G'B' studio 8-bit coordinates.
+r'g'b' :: (Floating a, RealFrac a) => Word8 -> Word8 -> Word8 -> Colour a
+r'g'b' = L.r'g'b' space
+
+-- |Returns the Y'CbCr studio 8-bit coordinates of a 'Colour'.
+toR'G'B' :: (Floating a, RealFrac a) => Colour a -> RGB Word8
+toR'G'B' = L.toR'G'B' space
