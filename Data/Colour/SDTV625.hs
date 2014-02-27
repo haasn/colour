@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -}
 -- |Defines the Y'CbCr and Y'PbPr colour spaces in accordance with
--- ITU-R Recommendation BT.601 used for 525-line (North America) standard
+-- ITU-R Recommendation BT.601 used for 625-line (PAL) standard
 -- definition television (SDTV).
 --
 -- For high definition television (HDTV) see "Data.Colour.HDTV".
