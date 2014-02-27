@@ -95,4 +95,4 @@ transferFunction = TransferFunction tf invtf 0.5 -- Digital Video and HDTV Algor
   tf x | x < 0.0018 = 4.5 * x
        | otherwise = 1.099 * x**(0.45) - 0.099
   invtf x | x < 0.0018*4.5 = x / 4.5
-	  | otherwise = (x**(recip 0.45)/1.099) + 0.099
+	  | otherwise = ((x + 0.099)/1.099)**recip 0.45
