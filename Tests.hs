@@ -37,7 +37,7 @@ import Data.Colour.SRGB.Linear
 import Data.Colour.CIE
 import Data.Colour.CIE.Illuminant (d65)
 import Data.Colour.Names
---import Data.Colour.HDTV as HDTV
+import Data.Colour.HDTV as HDTV
 --import qualified Data.Colour.SDTV as SDTV
 import Data.Colour.RGB
 import Data.Colour.RGBSpace
@@ -293,7 +293,7 @@ quickChecks = [("matrix-mult", quickCheck prop_matrixMult)
         ,("sRGB-to-from", quickCheck prop_toFromSRGB)
         ,("sRGB-from-to", quickCheck prop_fromToSRGB)
         ,("cieLAB-to-from", quickCheck (prop_toFromLAB d65))
---        ,("Y'CbCr-709-from-to", quickCheck prop_fromToY'CbCr709)
+        ,("Y'CbCr-709-from-to", quickCheck prop_fromToY'CbCr709)
 --        ,("Y'CbCr-601-from-to", quickCheck prop_fromToY'CbCr601)
         ,("dissolve-id", quickCheck prop_disolveId)
         ,("dissolve-transparent", quickCheck prop_disolveTransparent)

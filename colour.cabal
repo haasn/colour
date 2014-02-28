@@ -28,8 +28,10 @@ Library
                      Data.Colour.RGBSpace.HSL
                      Data.Colour.RGBSpace.HSV
                      Data.Colour.Names
+                     Data.Colour.HDTV
   Other-Modules:     Data.Colour.Internal
                      Data.Colour.Chan
                      Data.Colour.RGB
                      Data.Colour.Matrix
                      Data.Colour.CIE.Chromaticity
+                     Data.Colour.Luma
