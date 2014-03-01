@@ -90,7 +90,7 @@ toR'G'B' space c = fmap f (toRGBUsingSpace space c)
   
 {- The commonly used transfer function fror HDTV and SDTV -}
 transferFunction :: (Ord a, Floating a) => TransferFunction a
-transferFunction = TransferFunction tf invtf 0.5 -- Digital Video and HDTV Algorithims and Interfaces, page. 264
+transferFunction = TransferFunction tf invtf (1/1.95) -- Digital Video and HDTV Algorithims and Interfaces, page. 264
  where
   tf x | x < 0.0018 = 4.5 * x
        | otherwise = 1.099 * x**(0.45) - 0.099
